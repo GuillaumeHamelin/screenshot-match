@@ -23,7 +23,16 @@ import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oubl
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedShellRouteRouteImport } from './routes/_authenticated/_shell/route'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedShellCalendrierRouteImport } from './routes/_authenticated/_shell/calendrier'
 import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authenticated/_shell/dashboard'
+import { Route as AuthenticatedShellEntrainementsRouteImport } from './routes/_authenticated/_shell/entrainements'
+import { Route as AuthenticatedShellNutritionRouteImport } from './routes/_authenticated/_shell/nutrition'
+import { Route as AuthenticatedShellObjectifsRouteImport } from './routes/_authenticated/_shell/objectifs'
+import { Route as AuthenticatedShellParametresRouteImport } from './routes/_authenticated/_shell/parametres'
+import { Route as AuthenticatedShellPerformancesRouteImport } from './routes/_authenticated/_shell/performances'
+import { Route as AuthenticatedShellPhysiqueRouteImport } from './routes/_authenticated/_shell/physique'
+import { Route as AuthenticatedShellProfilRouteImport } from './routes/_authenticated/_shell/profil'
+import { Route as AuthenticatedShellProgrammesRouteImport } from './routes/_authenticated/_shell/programmes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -93,10 +102,64 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedShellCalendrierRoute =
+  AuthenticatedShellCalendrierRouteImport.update({
+    id: '/calendrier',
+    path: '/calendrier',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
 const AuthenticatedShellDashboardRoute =
   AuthenticatedShellDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellEntrainementsRoute =
+  AuthenticatedShellEntrainementsRouteImport.update({
+    id: '/entrainements',
+    path: '/entrainements',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellNutritionRoute =
+  AuthenticatedShellNutritionRouteImport.update({
+    id: '/nutrition',
+    path: '/nutrition',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellObjectifsRoute =
+  AuthenticatedShellObjectifsRouteImport.update({
+    id: '/objectifs',
+    path: '/objectifs',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellParametresRoute =
+  AuthenticatedShellParametresRouteImport.update({
+    id: '/parametres',
+    path: '/parametres',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellPerformancesRoute =
+  AuthenticatedShellPerformancesRouteImport.update({
+    id: '/performances',
+    path: '/performances',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellPhysiqueRoute =
+  AuthenticatedShellPhysiqueRouteImport.update({
+    id: '/physique',
+    path: '/physique',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellProfilRoute =
+  AuthenticatedShellProfilRouteImport.update({
+    id: '/profil',
+    path: '/profil',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
+const AuthenticatedShellProgrammesRoute =
+  AuthenticatedShellProgrammesRouteImport.update({
+    id: '/programmes',
+    path: '/programmes',
     getParentRoute: () => AuthenticatedShellRouteRoute,
   } as any)
 
@@ -113,7 +176,16 @@ export interface FileRoutesByFullPath {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/entrainements': typeof AuthenticatedShellEntrainementsRoute
+  '/nutrition': typeof AuthenticatedShellNutritionRoute
+  '/objectifs': typeof AuthenticatedShellObjectifsRoute
+  '/parametres': typeof AuthenticatedShellParametresRoute
+  '/performances': typeof AuthenticatedShellPerformancesRoute
+  '/physique': typeof AuthenticatedShellPhysiqueRoute
+  '/profil': typeof AuthenticatedShellProfilRoute
+  '/programmes': typeof AuthenticatedShellProgrammesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -128,7 +200,16 @@ export interface FileRoutesByTo {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/entrainements': typeof AuthenticatedShellEntrainementsRoute
+  '/nutrition': typeof AuthenticatedShellNutritionRoute
+  '/objectifs': typeof AuthenticatedShellObjectifsRoute
+  '/parametres': typeof AuthenticatedShellParametresRoute
+  '/performances': typeof AuthenticatedShellPerformancesRoute
+  '/physique': typeof AuthenticatedShellPhysiqueRoute
+  '/profil': typeof AuthenticatedShellProfilRoute
+  '/programmes': typeof AuthenticatedShellProgrammesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,7 +227,16 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_shell': typeof AuthenticatedShellRouteRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/_shell/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/_authenticated/_shell/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/_authenticated/_shell/entrainements': typeof AuthenticatedShellEntrainementsRoute
+  '/_authenticated/_shell/nutrition': typeof AuthenticatedShellNutritionRoute
+  '/_authenticated/_shell/objectifs': typeof AuthenticatedShellObjectifsRoute
+  '/_authenticated/_shell/parametres': typeof AuthenticatedShellParametresRoute
+  '/_authenticated/_shell/performances': typeof AuthenticatedShellPerformancesRoute
+  '/_authenticated/_shell/physique': typeof AuthenticatedShellPhysiqueRoute
+  '/_authenticated/_shell/profil': typeof AuthenticatedShellProfilRoute
+  '/_authenticated/_shell/programmes': typeof AuthenticatedShellProgrammesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -163,7 +253,16 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/reset-password'
     | '/onboarding'
+    | '/calendrier'
     | '/dashboard'
+    | '/entrainements'
+    | '/nutrition'
+    | '/objectifs'
+    | '/parametres'
+    | '/performances'
+    | '/physique'
+    | '/profil'
+    | '/programmes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -178,7 +277,16 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/reset-password'
     | '/onboarding'
+    | '/calendrier'
     | '/dashboard'
+    | '/entrainements'
+    | '/nutrition'
+    | '/objectifs'
+    | '/parametres'
+    | '/performances'
+    | '/physique'
+    | '/profil'
+    | '/programmes'
   id:
     | '__root__'
     | '/'
@@ -195,7 +303,16 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/_shell'
     | '/_authenticated/onboarding'
+    | '/_authenticated/_shell/calendrier'
     | '/_authenticated/_shell/dashboard'
+    | '/_authenticated/_shell/entrainements'
+    | '/_authenticated/_shell/nutrition'
+    | '/_authenticated/_shell/objectifs'
+    | '/_authenticated/_shell/parametres'
+    | '/_authenticated/_shell/performances'
+    | '/_authenticated/_shell/physique'
+    | '/_authenticated/_shell/profil'
+    | '/_authenticated/_shell/programmes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -313,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_shell/calendrier': {
+      id: '/_authenticated/_shell/calendrier'
+      path: '/calendrier'
+      fullPath: '/calendrier'
+      preLoaderRoute: typeof AuthenticatedShellCalendrierRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
     '/_authenticated/_shell/dashboard': {
       id: '/_authenticated/_shell/dashboard'
       path: '/dashboard'
@@ -320,16 +444,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellDashboardRouteImport
       parentRoute: typeof AuthenticatedShellRouteRoute
     }
+    '/_authenticated/_shell/entrainements': {
+      id: '/_authenticated/_shell/entrainements'
+      path: '/entrainements'
+      fullPath: '/entrainements'
+      preLoaderRoute: typeof AuthenticatedShellEntrainementsRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
+    '/_authenticated/_shell/nutrition': {
+      id: '/_authenticated/_shell/nutrition'
+      path: '/nutrition'
+      fullPath: '/nutrition'
+      preLoaderRoute: typeof AuthenticatedShellNutritionRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
+    '/_authenticated/_shell/objectifs': {
+      id: '/_authenticated/_shell/objectifs'
+      path: '/objectifs'
+      fullPath: '/objectifs'
+      preLoaderRoute: typeof AuthenticatedShellObjectifsRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
+    '/_authenticated/_shell/parametres': {
+      id: '/_authenticated/_shell/parametres'
+      path: '/parametres'
+      fullPath: '/parametres'
+      preLoaderRoute: typeof AuthenticatedShellParametresRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
+    '/_authenticated/_shell/performances': {
+      id: '/_authenticated/_shell/performances'
+      path: '/performances'
+      fullPath: '/performances'
+      preLoaderRoute: typeof AuthenticatedShellPerformancesRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
+    '/_authenticated/_shell/physique': {
+      id: '/_authenticated/_shell/physique'
+      path: '/physique'
+      fullPath: '/physique'
+      preLoaderRoute: typeof AuthenticatedShellPhysiqueRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
+    '/_authenticated/_shell/profil': {
+      id: '/_authenticated/_shell/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedShellProfilRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
+    '/_authenticated/_shell/programmes': {
+      id: '/_authenticated/_shell/programmes'
+      path: '/programmes'
+      fullPath: '/programmes'
+      preLoaderRoute: typeof AuthenticatedShellProgrammesRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
   }
 }
 
 interface AuthenticatedShellRouteRouteChildren {
+  AuthenticatedShellCalendrierRoute: typeof AuthenticatedShellCalendrierRoute
   AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
+  AuthenticatedShellEntrainementsRoute: typeof AuthenticatedShellEntrainementsRoute
+  AuthenticatedShellNutritionRoute: typeof AuthenticatedShellNutritionRoute
+  AuthenticatedShellObjectifsRoute: typeof AuthenticatedShellObjectifsRoute
+  AuthenticatedShellParametresRoute: typeof AuthenticatedShellParametresRoute
+  AuthenticatedShellPerformancesRoute: typeof AuthenticatedShellPerformancesRoute
+  AuthenticatedShellPhysiqueRoute: typeof AuthenticatedShellPhysiqueRoute
+  AuthenticatedShellProfilRoute: typeof AuthenticatedShellProfilRoute
+  AuthenticatedShellProgrammesRoute: typeof AuthenticatedShellProgrammesRoute
 }
 
 const AuthenticatedShellRouteRouteChildren: AuthenticatedShellRouteRouteChildren =
   {
+    AuthenticatedShellCalendrierRoute: AuthenticatedShellCalendrierRoute,
     AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
+    AuthenticatedShellEntrainementsRoute: AuthenticatedShellEntrainementsRoute,
+    AuthenticatedShellNutritionRoute: AuthenticatedShellNutritionRoute,
+    AuthenticatedShellObjectifsRoute: AuthenticatedShellObjectifsRoute,
+    AuthenticatedShellParametresRoute: AuthenticatedShellParametresRoute,
+    AuthenticatedShellPerformancesRoute: AuthenticatedShellPerformancesRoute,
+    AuthenticatedShellPhysiqueRoute: AuthenticatedShellPhysiqueRoute,
+    AuthenticatedShellProfilRoute: AuthenticatedShellProfilRoute,
+    AuthenticatedShellProgrammesRoute: AuthenticatedShellProgrammesRoute,
   }
 
 const AuthenticatedShellRouteRouteWithChildren =
