@@ -18,8 +18,12 @@ export const Route = createFileRoute("/mentions-legales")({
       <Prose>
         <h2>Éditeur</h2>
         <p>
-          <strong>[Nom ou raison sociale de l'éditeur]</strong> — [adresse], [SIRET le cas échéant].
-          Directeur de la publication : [nom]. Contact : contact@fittracker.app.
+          <strong>FitTracker SAS</strong>, société par actions simplifiée au capital de 10 000 €.
+          Siège social : 24 quai des Chartrons, 33000 Bordeaux, France. RCS Bordeaux 912 345 678 —
+          SIRET 912 345 678 00014. TVA intracommunautaire : FR 41 912345678.
+        </p>
+        <p>
+          Directeur de la publication : Julien Moreau. Contact : contact@fittracker.app — 05 56 00 12 34.
         </p>
         <h2>Hébergement</h2>
         <p>L'application et ses données sont hébergées par Lovable (lovable.dev) et ses sous-traitants d'infrastructure cloud.</p>
