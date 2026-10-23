@@ -8,3 +8,13 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+# Project rules
+- App UI copy is French, informal "tu". Keep it that way across pages.
+- Signed-in pages live under `src/routes/_authenticated/_shell/` (app shell + onboarding gate); onboarding sits outside `_shell` so it renders without the shell. Why: one gate for session, one for completed profile.
+- Pure calculations (1RM, macros, goals, nutrition suggestions) live in `src/lib/fitness.ts` with tests in `src/lib/fitness.test.ts`. Why: correctness of numbers is a core requirement.
+- Data reads use query options in `src/lib/queries.ts`; mutations invalidate the `dashboard` key so the dashboard stays live.
+- Every user-owned table carries `user_id` with owner-only RLS; `exercises` with `user_id IS NULL` is the shared library. Never add cross-user reads.
+- User files go in private buckets under `<user_id>/...`; display via signed URLs.
+- Account deletion goes through `deleteMyAccount` (server function: `delete_my_data` RPC, then admin user delete). Add new user tables to that RPC and to the export list in Paramètres.
+- Dark-only design: tokens in `src/styles.css`; no light theme.
