@@ -9,7 +9,7 @@
 - [x] Dashboard (KPIs, graphiques, actions rapides)
 - [x] Profil (photo), Paramètres (objectifs, e-mail, mot de passe, export, suppression)
 - [x] Suivi physique (mesures, graphiques, historique)
-- [ ] Coordonnées réelles (e-mail de contact, éditeur pour mentions légales) — attente utilisateur
+- [x] Coordonnées fictives (contact + mentions légales), à remplacer avant un vrai lancement
 
 ## Phase 2 — Musculation
 - [ ] Bibliothèque d'exercices (41 exercices déjà en base) + exercices perso
