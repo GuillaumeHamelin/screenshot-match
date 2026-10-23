@@ -32,12 +32,11 @@ function ResetPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const isRecovery = window.location.hash.includes("type=recovery");
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") setReady(true);
     });
     supabase.auth.getSession().then(({ data: s }) => {
-      if (s.session && (isRecovery || s.session)) setReady(true);
+      if (s.session) setReady(true);
       setChecked(true);
     });
     return () => data.subscription.unsubscribe();
