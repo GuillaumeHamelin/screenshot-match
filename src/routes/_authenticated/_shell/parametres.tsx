@@ -119,7 +119,7 @@ function SettingsPage() {
   async function saveGoals(e: FormEvent) {
     e.preventDefault();
     const err = validateNutritionGoals(goals);
-    if (err) return toast.error(err);
+    if (err) { toast.error(err); return; }
     setSavingGoals(true);
     const { error } = await supabase
       .from("profiles")
@@ -132,7 +132,7 @@ function SettingsPage() {
       })
       .eq("id", user.id);
     setSavingGoals(false);
-    if (error) return toast.error("Enregistrement impossible.");
+    if (error) { toast.error("Enregistrement impossible."); return; }
     qc.invalidateQueries({ queryKey: ["profile"] });
     qc.invalidateQueries({ queryKey: ["dashboard"] });
     toast.success("Objectifs nutritionnels enregistrés.");
@@ -140,12 +140,12 @@ function SettingsPage() {
 
   async function changeEmail(e: FormEvent) {
     e.preventDefault();
-    if (!/^\S+@\S+\.\S+$/.test(newEmail.trim())) return toast.error("Adresse e-mail invalide.");
+    if (!/^\S+@\S+\.\S+$/.test(newEmail.trim())) { toast.error("Adresse e-mail invalide."); return; }
     const { error } = await supabase.auth.updateUser(
       { email: newEmail.trim() },
       { emailRedirectTo: `${window.location.origin}/auth` },
     );
-    if (error) return toast.error(translateAuthError(error.message));
+    if (error) { toast.error(translateAuthError(error.message)); return; }
     setNewEmail("");
     toast.success("Un lien de confirmation a été envoyé à la nouvelle adresse.");
   }
@@ -153,13 +153,13 @@ function SettingsPage() {
   async function changePassword(e: FormEvent) {
     e.preventDefault();
     if (newPw.length < 8 || !/[A-Za-z]/.test(newPw) || !/\d/.test(newPw))
-      return toast.error("8 caractères minimum, avec lettres et chiffres.");
-    if (newPw !== confirmPw) return toast.error("Les deux mots de passe ne correspondent pas.");
+      { toast.error("8 caractères minimum, avec lettres et chiffres."); return; }
+    if (newPw !== confirmPw) { toast.error("Les deux mots de passe ne correspondent pas."); return; }
     const { error } = await supabase.auth.updateUser({
       password: newPw,
       ...(currentPw ? { current_password: currentPw } : {}),
     } as Parameters<typeof supabase.auth.updateUser>[0]);
-    if (error) return toast.error(translateAuthError(error.message));
+    if (error) { toast.error(translateAuthError(error.message)); return; }
     setCurrentPw("");
     setNewPw("");
     setConfirmPw("");
@@ -171,8 +171,11 @@ function SettingsPage() {
     try {
       const out: Record<string, unknown> = { exported_at: new Date().toISOString(), email: user.email };
       for (const t of EXPORT_TABLES) {
-        const q = supabase.from(t).select("*");
-        const { data, error } = t === "profiles" ? await q.eq("id", user.id) : await q.eq("user_id", user.id);
+        // Every exported table except profiles is keyed by user_id.
+        const { data, error } =
+          t === "profiles"
+            ? await supabase.from("profiles").select("*").eq("id", user.id)
+            : await supabase.from(t as "goals").select("*").eq("user_id", user.id);
         if (error) throw error;
         out[t] = data;
       }

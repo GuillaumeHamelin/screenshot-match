@@ -10,10 +10,10 @@ export function PageHeader({
   description,
   actions,
 }: {
-  eyebrow?: string;
+  eyebrow?: string | undefined;
   title: string;
-  description?: ReactNode;
-  actions?: ReactNode;
+  description?: ReactNode | undefined;
+  actions?: ReactNode | undefined;
 }) {
   return (
     <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -36,10 +36,10 @@ export function Panel({
   className,
   children,
 }: {
-  title?: string;
-  icon?: LucideIcon;
-  action?: ReactNode;
-  className?: string;
+  title?: string | undefined;
+  icon?: LucideIcon | undefined;
+  action?: ReactNode | undefined;
+  className?: string | undefined;
   children: ReactNode;
 }) {
   return (
@@ -69,9 +69,9 @@ export function StatCard({
   icon: LucideIcon;
   label: string;
   value: ReactNode;
-  unit?: string;
-  sub?: ReactNode;
-  progress?: number;
+  unit?: string | undefined;
+  sub?: ReactNode | undefined;
+  progress?: number | undefined;
 }) {
   return (
     <div className="panel group p-4 transition-all duration-300 hover:border-foreground/25 hover:shadow-glow md:p-5">
@@ -110,9 +110,9 @@ export function EmptyState({
 }: {
   icon: LucideIcon;
   title: string;
-  text?: string;
-  action?: ReactNode;
-  className?: string;
+  text?: string | undefined;
+  action?: ReactNode | undefined;
+  className?: string | undefined;
 }) {
   return (
     <div className={cn("flex flex-col items-center justify-center rounded-lg border border-dashed border-border px-4 py-10 text-center", className)}>

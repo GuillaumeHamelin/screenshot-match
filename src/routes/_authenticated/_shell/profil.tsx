@@ -57,21 +57,21 @@ function ProfilePage() {
 
   async function onAvatar(file: File | undefined) {
     if (!file) return;
-    if (!file.type.startsWith("image/")) return toast.error("Choisis une image.");
-    if (file.size > 5 * 1024 * 1024) return toast.error("Image trop lourde (5 Mo max).");
+    if (!file.type.startsWith("image/")) { toast.error("Choisis une image."); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Image trop lourde (5 Mo max)."); return; }
     setUploading(true);
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const path = `${user.id}/avatar-${Date.now()}.${ext}`;
     const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
     if (upErr) {
       setUploading(false);
-      return toast.error("Envoi de la photo impossible.");
+      { toast.error("Envoi de la photo impossible."); return; }
     }
     const old = profile?.avatar_url;
     const { error } = await supabase.from("profiles").update({ avatar_url: path }).eq("id", user.id);
     if (!error && old && !old.startsWith("http")) await supabase.storage.from("avatars").remove([old]);
     setUploading(false);
-    if (error) return toast.error("Mise à jour impossible.");
+    if (error) { toast.error("Mise à jour impossible."); return; }
     qc.invalidateQueries({ queryKey: ["profile"] });
     toast.success("Photo de profil mise à jour.");
   }

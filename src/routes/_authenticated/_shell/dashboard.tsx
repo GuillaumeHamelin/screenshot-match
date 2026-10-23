@@ -89,7 +89,7 @@ function Dashboard() {
     sessions: profile?.weekly_sessions_goal ?? 0,
   };
 
-  const weekStart = startOfWeek(new Date());
+  const weekStart = useMemo(() => startOfWeek(new Date()), []);
   const thisWeek = dash.sessions.filter((s) => s.started_at && new Date(s.started_at) >= weekStart);
   const weekDuration = thisWeek.reduce((s, x) => s + (x.duration_seconds ?? 0), 0);
   const weekVolume = thisWeek.reduce((s, x) => s + Number(x.total_volume_kg ?? 0), 0);
