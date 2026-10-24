@@ -12,11 +12,11 @@
 - [x] Coordonnées fictives (contact + mentions légales), à remplacer avant un vrai lancement
 
 ## Phase 2 — Musculation
-- [ ] Bibliothèque d'exercices (41 exercices déjà en base) + exercices perso
-- [ ] Programmes, séances modèles, exercices réordonnables
-- [ ] Séance active : séries, chrono, minuteur de repos, historique précédent
-- [ ] Récap fin de séance, records automatiques
-- [ ] Performances : stats, 1RM, graphiques, filtres, comparaison
+- [x] Bibliothèque d'exercices (41 exercices déjà en base) + exercices perso
+- [x] Programmes, séances modèles, exercices réordonnables
+- [x] Séance active : séries, chrono, minuteur de repos, historique précédent
+- [x] Récap fin de séance, records automatiques
+- [x] Performances : stats, 1RM, graphiques, filtres, comparaison
 
 ## Phase 3 — Nutrition
 - [ ] Journal alimentaire + recherche Open Food Facts
