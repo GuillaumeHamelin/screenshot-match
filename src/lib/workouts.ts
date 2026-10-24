@@ -303,14 +303,22 @@ export async function deleteSession(sessionId: string) {
   if (error) throw error;
 }
 
-/** Swap positions of two rows in a positioned table. */
-export async function swapPositions(
+/** Persist a new order: each row gets its index as position. */
+export async function reorderRows(
   table: "workout_template_exercises" | "workout_exercises" | "workout_templates",
-  a: { id: string; position: number },
-  b: { id: string; position: number },
+  orderedIds: string[],
 ) {
-  const r1 = await supabase.from(table).update({ position: b.position }).eq("id", a.id);
-  if (r1.error) throw r1.error;
-  const r2 = await supabase.from(table).update({ position: a.position }).eq("id", b.id);
-  if (r2.error) throw r2.error;
+  const results = await Promise.all(
+    orderedIds.map((id, position) => supabase.from(table).update({ position }).eq("id", id)),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) throw failed.error;
+}
+
+export function moveItem<T>(list: T[], index: number, delta: -1 | 1): T[] {
+  const j = index + delta;
+  if (j < 0 || j >= list.length) return list;
+  const copy = [...list];
+  [copy[index], copy[j]] = [copy[j]!, copy[index]!];
+  return copy;
 }
