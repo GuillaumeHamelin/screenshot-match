@@ -84,3 +84,65 @@ describe("suggestNutritionGoals", () => {
     ).toEqual({ calories: 2760, protein: 160, carbs: 368, fat: 72, water: 2800 });
   });
 });
+
+import { detectRecords, exerciseBests, formatClock, periodStart, totalVolume } from "./fitness";
+
+describe("totalVolume", () => {
+  it("counts only validated, non warm-up sets", () => {
+    expect(
+      totalVolume([
+        { weight_kg: 40, reps: 10, set_type: "warmup", completed: true },
+        { weight_kg: 80, reps: 8, set_type: "normal", completed: true },
+        { weight_kg: 80, reps: 8, set_type: "normal", completed: false },
+        { weight_kg: "60", reps: 10, set_type: "dropset", completed: true },
+      ]),
+    ).toBe(1240);
+  });
+});
+
+describe("exerciseBests", () => {
+  const sets = [
+    { id: "a", weight_kg: 100, reps: 5, set_type: "normal", completed: true },
+    { id: "b", weight_kg: 90, reps: 8, set_type: "normal", completed: true },
+    { id: "c", weight_kg: 120, reps: 1, set_type: "warmup", completed: true },
+  ];
+  it("takes the heaviest working set as max weight, ignoring warm-ups", () => {
+    expect(exerciseBests(sets).find((b) => b.type === "max_weight")).toMatchObject({ value: 100, set_id: "a" });
+  });
+  it("keeps the best estimated 1RM across sets (90 × 8 = 114 kg beats 100 × 5 = 116.7? no)", () => {
+    expect(exerciseBests(sets).find((b) => b.type === "est_1rm")).toMatchObject({ value: 116.7, set_id: "a" });
+  });
+  it("returns nothing when no set was validated", () => {
+    expect(exerciseBests([{ weight_kg: 100, reps: 5, set_type: "normal", completed: false }])).toEqual([]);
+  });
+});
+
+describe("detectRecords", () => {
+  const bests = [
+    { type: "max_weight" as const, value: 100, weight_kg: 100, reps: 5, set_id: "a" },
+    { type: "max_reps" as const, value: 8, weight_kg: 90, reps: 8, set_id: "b" },
+  ];
+  it("flags only values strictly above the previous best", () => {
+    expect(detectRecords(bests, { max_weight: 100, max_reps: 7 }).map((r) => r.type)).toEqual(["max_reps"]);
+  });
+  it("treats a first performance as a new record", () => {
+    expect(detectRecords(bests, {})).toHaveLength(2);
+  });
+});
+
+describe("formatClock", () => {
+  it("formats minutes and hours", () => {
+    expect(formatClock(307)).toBe("05:07");
+    expect(formatClock(3725)).toBe("1:02:05");
+  });
+});
+
+describe("periodStart", () => {
+  it("includes today in a 7-day period", () => {
+    const start = periodStart("7", new Date(2026, 9, 24, 15, 0));
+    expect(start?.getDate()).toBe(18);
+  });
+  it("has no start for 'Tout'", () => {
+    expect(periodStart("all")).toBeNull();
+  });
+});
