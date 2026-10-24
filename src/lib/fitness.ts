@@ -183,3 +183,122 @@ export function parseNum(value: string): number | null {
   const n = Number(v);
   return Number.isFinite(n) ? n : NaN;
 }
+
+// ───────────────────────── Workouts ─────────────────────────
+
+export type SetType = "normal" | "warmup" | "dropset" | "failure";
+export type RecordType = "max_weight" | "est_1rm" | "max_reps" | "max_volume";
+
+export type LoggedSet = {
+  id?: string | null;
+  weight_kg: number | string | null;
+  reps: number | null;
+  set_type: string;
+  completed: boolean;
+};
+
+/** Sets that count for volume and records: validated, not a warm-up, at least one rep. */
+export function workingSets<T extends LoggedSet>(sets: T[]): T[] {
+  return sets.filter((s) => s.completed && s.set_type !== "warmup" && (s.reps ?? 0) > 0);
+}
+
+/** Total volume (load × reps) of the working sets. Warm-ups and unvalidated sets don't count. */
+export function totalVolume(sets: LoggedSet[]): number {
+  return round1(
+    workingSets(sets).reduce((t, s) => t + setVolume(Number(s.weight_kg ?? 0), s.reps), 0),
+  );
+}
+
+export type ExerciseBest = {
+  type: RecordType;
+  value: number;
+  weight_kg: number | null;
+  reps: number | null;
+  set_id: string | null;
+};
+
+/** Best values reached on one exercise during one session. */
+export function exerciseBests(sets: LoggedSet[]): ExerciseBest[] {
+  const ws = workingSets(sets).map((s) => ({ ...s, w: Number(s.weight_kg ?? 0), r: s.reps ?? 0 }));
+  if (ws.length === 0) return [];
+  const out: ExerciseBest[] = [];
+
+  const loaded = ws.filter((s) => s.w > 0);
+  if (loaded.length > 0) {
+    const heaviest = loaded.reduce((a, b) => (b.w > a.w || (b.w === a.w && b.r > a.r) ? b : a));
+    out.push({ type: "max_weight", value: heaviest.w, weight_kg: heaviest.w, reps: heaviest.r, set_id: heaviest.id ?? null });
+
+    const best1rm = loaded.reduce((a, b) => (estimate1RM(b.w, b.r) > estimate1RM(a.w, a.r) ? b : a));
+    out.push({ type: "est_1rm", value: estimate1RM(best1rm.w, best1rm.r), weight_kg: best1rm.w, reps: best1rm.r, set_id: best1rm.id ?? null });
+  }
+
+  const mostReps = ws.reduce((a, b) => (b.r > a.r || (b.r === a.r && b.w > a.w) ? b : a));
+  out.push({ type: "max_reps", value: mostReps.r, weight_kg: mostReps.w || null, reps: mostReps.r, set_id: mostReps.id ?? null });
+
+  const volume = totalVolume(sets);
+  if (volume > 0) out.push({ type: "max_volume", value: volume, weight_kg: null, reps: null, set_id: null });
+
+  return out;
+}
+
+/** Bests that strictly beat the previous best of the same type (no previous best = new record). */
+export function detectRecords(
+  bests: ExerciseBest[],
+  previous: Partial<Record<RecordType, number>>,
+): (ExerciseBest & { previous: number | null })[] {
+  return bests
+    .filter((b) => b.value > (previous[b.type] ?? 0))
+    .map((b) => ({ ...b, previous: previous[b.type] ?? null }));
+}
+
+/** Stopwatch format: 05:07 or 1:02:05. */
+export function formatClock(totalSeconds: number): string {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const mm = String(m).padStart(2, "0");
+  const ss = String(sec).padStart(2, "0");
+  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+
+export const PERIOD_OPTIONS = [
+  { key: "7", label: "7 j", days: 7 },
+  { key: "30", label: "30 j", days: 30 },
+  { key: "90", label: "3 mois", days: 90 },
+  { key: "180", label: "6 mois", days: 180 },
+  { key: "365", label: "1 an", days: 365 },
+  { key: "all", label: "Tout", days: null },
+] as const;
+export type PeriodKey = (typeof PERIOD_OPTIONS)[number]["key"];
+
+/** Start of the period (local midnight, N days ago), or null for "all". */
+export function periodStart(key: PeriodKey, now: Date = new Date()): Date | null {
+  const days = PERIOD_OPTIONS.find((p) => p.key === key)?.days ?? null;
+  if (days == null) return null;
+  const d = new Date(now);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - (days - 1));
+  return d;
+}
+
+export const RECORD_LABELS: Record<RecordType, string> = {
+  max_weight: "Charge max",
+  est_1rm: "1RM estimé",
+  max_reps: "Répétitions max",
+  max_volume: "Volume max (séance)",
+};
+
+export const RECORD_UNITS: Record<RecordType, string> = {
+  max_weight: "kg",
+  est_1rm: "kg",
+  max_reps: "reps",
+  max_volume: "kg",
+};
+
+export const SET_TYPE_LABELS: Record<SetType, string> = {
+  normal: "Normale",
+  warmup: "Échauffement",
+  dropset: "Dégressive",
+  failure: "Échec",
+};
