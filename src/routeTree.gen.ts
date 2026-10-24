@@ -31,6 +31,7 @@ import { Route as AuthenticatedShellParametresRouteImport } from './routes/_auth
 import { Route as AuthenticatedShellPerformancesRouteImport } from './routes/_authenticated/_shell/performances'
 import { Route as AuthenticatedShellPhysiqueRouteImport } from './routes/_authenticated/_shell/physique'
 import { Route as AuthenticatedShellProfilRouteImport } from './routes/_authenticated/_shell/profil'
+import { Route as AuthenticatedShellProgrammesIndexRouteImport } from './routes/_authenticated/_shell/programmes.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -148,6 +149,12 @@ const AuthenticatedShellProfilRoute =
     path: '/profil',
     getParentRoute: () => AuthenticatedShellRouteRoute,
   } as any)
+const AuthenticatedShellProgrammesIndexRoute =
+  AuthenticatedShellProgrammesIndexRouteImport.update({
+    id: '/programmes/',
+    path: '/programmes/',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/performances': typeof AuthenticatedShellPerformancesRoute
   '/physique': typeof AuthenticatedShellPhysiqueRoute
   '/profil': typeof AuthenticatedShellProfilRoute
+  '/programmes/': typeof AuthenticatedShellProgrammesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -192,6 +200,7 @@ export interface FileRoutesByTo {
   '/performances': typeof AuthenticatedShellPerformancesRoute
   '/physique': typeof AuthenticatedShellPhysiqueRoute
   '/profil': typeof AuthenticatedShellProfilRoute
+  '/programmes': typeof AuthenticatedShellProgrammesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -217,6 +226,7 @@ export interface FileRoutesById {
   '/_authenticated/_shell/performances': typeof AuthenticatedShellPerformancesRoute
   '/_authenticated/_shell/physique': typeof AuthenticatedShellPhysiqueRoute
   '/_authenticated/_shell/profil': typeof AuthenticatedShellProfilRoute
+  '/_authenticated/_shell/programmes/': typeof AuthenticatedShellProgrammesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/performances'
     | '/physique'
     | '/profil'
+    | '/programmes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/performances'
     | '/physique'
     | '/profil'
+    | '/programmes'
   id:
     | '__root__'
     | '/'
@@ -287,6 +299,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_shell/performances'
     | '/_authenticated/_shell/physique'
     | '/_authenticated/_shell/profil'
+    | '/_authenticated/_shell/programmes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -460,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellProfilRouteImport
       parentRoute: typeof AuthenticatedShellRouteRoute
     }
+    '/_authenticated/_shell/programmes/': {
+      id: '/_authenticated/_shell/programmes/'
+      path: '/programmes'
+      fullPath: '/programmes/'
+      preLoaderRoute: typeof AuthenticatedShellProgrammesIndexRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
   }
 }
 
@@ -472,6 +492,7 @@ interface AuthenticatedShellRouteRouteChildren {
   AuthenticatedShellPerformancesRoute: typeof AuthenticatedShellPerformancesRoute
   AuthenticatedShellPhysiqueRoute: typeof AuthenticatedShellPhysiqueRoute
   AuthenticatedShellProfilRoute: typeof AuthenticatedShellProfilRoute
+  AuthenticatedShellProgrammesIndexRoute: typeof AuthenticatedShellProgrammesIndexRoute
 }
 
 const AuthenticatedShellRouteRouteChildren: AuthenticatedShellRouteRouteChildren =
@@ -484,6 +505,8 @@ const AuthenticatedShellRouteRouteChildren: AuthenticatedShellRouteRouteChildren
     AuthenticatedShellPerformancesRoute: AuthenticatedShellPerformancesRoute,
     AuthenticatedShellPhysiqueRoute: AuthenticatedShellPhysiqueRoute,
     AuthenticatedShellProfilRoute: AuthenticatedShellProfilRoute,
+    AuthenticatedShellProgrammesIndexRoute:
+      AuthenticatedShellProgrammesIndexRoute,
   }
 
 const AuthenticatedShellRouteRouteWithChildren =
