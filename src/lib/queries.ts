@@ -145,10 +145,7 @@ export const programsQuery = (userId: string) =>
     },
   });
 
-export const programQuery = (programId: string) =>
-  queryOptions({
-    queryKey: ["program", programId],
-    queryFn: async () => {
+async function fetchProgram(programId: string) {
       const { data, error } = await supabase
         .from("workout_programs")
         .select(
@@ -165,10 +162,12 @@ export const programQuery = (programId: string) =>
           workout_template_exercises: [...t.workout_template_exercises].sort(byPosition),
         })),
       };
-    },
-  });
+}
 
-export type ProgramDetail = NonNullable<Awaited<ReturnType<NonNullable<ReturnType<typeof programQuery>["queryFn"]>>>>;
+export const programQuery = (programId: string) =>
+  queryOptions({ queryKey: ["program", programId], queryFn: () => fetchProgram(programId) });
+
+export type ProgramDetail = NonNullable<Awaited<ReturnType<typeof fetchProgram>>>;
 
 export const activeSessionQuery = (userId: string) =>
   queryOptions({
@@ -202,10 +201,7 @@ export const sessionsHistoryQuery = (userId: string) =>
     },
   });
 
-export const sessionQuery = (sessionId: string) =>
-  queryOptions({
-    queryKey: ["session", sessionId],
-    queryFn: async () => {
+async function fetchSession(sessionId: string) {
       const { data, error } = await supabase
         .from("workout_sessions")
         .select("*, workout_exercises(*, exercises(id, name, muscle_group, equipment), workout_sets(*))")
@@ -220,10 +216,12 @@ export const sessionQuery = (sessionId: string) =>
           workout_sets: [...we.workout_sets].sort((a, b) => a.set_number - b.set_number),
         })),
       };
-    },
-  });
+}
 
-export type SessionDetail = NonNullable<Awaited<ReturnType<NonNullable<ReturnType<typeof sessionQuery>["queryFn"]>>>>;
+export const sessionQuery = (sessionId: string) =>
+  queryOptions({ queryKey: ["session", sessionId], queryFn: () => fetchSession(sessionId) });
+
+export type SessionDetail = NonNullable<Awaited<ReturnType<typeof fetchSession>>>;
 export type SessionExercise = SessionDetail["workout_exercises"][number];
 
 /** Sets from the most recent completed session for each exercise (excluding the current session). */
@@ -289,10 +287,7 @@ export const sessionRecordsQuery = (sessionId: string) =>
   });
 
 /** Every completed session with its validated sets, for analytics. */
-export const performanceQuery = (userId: string) =>
-  queryOptions({
-    queryKey: ["performance", userId],
-    queryFn: async () => {
+async function fetchPerformance(userId: string) {
       const { data, error } = await supabase
         .from("workout_sessions")
         .select(
@@ -304,7 +299,9 @@ export const performanceQuery = (userId: string) =>
         .limit(1000);
       if (error) throw error;
       return data;
-    },
-  });
+}
 
-export type PerformanceSession = Awaited<ReturnType<NonNullable<ReturnType<typeof performanceQuery>["queryFn"]>>>[number];
+export const performanceQuery = (userId: string) =>
+  queryOptions({ queryKey: ["performance", userId], queryFn: () => fetchPerformance(userId) });
+
+export type PerformanceSession = Awaited<ReturnType<typeof fetchPerformance>>[number];
