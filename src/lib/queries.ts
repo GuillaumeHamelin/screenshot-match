@@ -107,3 +107,204 @@ export const avatarUrlQuery = (path: string | null | undefined) =>
     },
     staleTime: 50 * 60_000,
   });
+
+// ───────────────────────── Workouts ─────────────────────────
+
+export type Exercise = Database["public"]["Tables"]["exercises"]["Row"];
+export type WorkoutSet = Database["public"]["Tables"]["workout_sets"]["Row"];
+
+const byPosition = (a: { position: number }, b: { position: number }) => a.position - b.position;
+
+export const exercisesQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["exercises", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("exercises")
+        .select("*")
+        .or(`user_id.is.null,user_id.eq.${userId}`)
+        .order("muscle_group")
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 5 * 60_000,
+  });
+
+export const programsQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["programs", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workout_programs")
+        .select("id, name, description, created_at, workout_templates(id, name, weekdays, position, workout_template_exercises(id))")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data.map((p) => ({ ...p, workout_templates: [...p.workout_templates].sort(byPosition) }));
+    },
+  });
+
+export const programQuery = (programId: string) =>
+  queryOptions({
+    queryKey: ["program", programId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workout_programs")
+        .select(
+          "*, workout_templates(*, workout_template_exercises(*, exercises(id, name, muscle_group, equipment)))",
+        )
+        .eq("id", programId)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      return {
+        ...data,
+        workout_templates: [...data.workout_templates].sort(byPosition).map((t) => ({
+          ...t,
+          workout_template_exercises: [...t.workout_template_exercises].sort(byPosition),
+        })),
+      };
+    },
+  });
+
+export type ProgramDetail = NonNullable<Awaited<ReturnType<NonNullable<ReturnType<typeof programQuery>["queryFn"]>>>>;
+
+export const activeSessionQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["active-session", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workout_sessions")
+        .select("id, name, started_at")
+        .eq("user_id", userId)
+        .eq("status", "in_progress")
+        .order("started_at", { ascending: false })
+        .limit(1);
+      if (error) throw error;
+      return data[0] ?? null;
+    },
+  });
+
+export const sessionsHistoryQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["sessions", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workout_sessions")
+        .select("id, name, started_at, ended_at, duration_seconds, total_volume_kg, workout_exercises(id, workout_sets(id, completed))")
+        .eq("user_id", userId)
+        .eq("status", "completed")
+        .order("started_at", { ascending: false })
+        .limit(300);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const sessionQuery = (sessionId: string) =>
+  queryOptions({
+    queryKey: ["session", sessionId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workout_sessions")
+        .select("*, workout_exercises(*, exercises(id, name, muscle_group, equipment), workout_sets(*))")
+        .eq("id", sessionId)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      return {
+        ...data,
+        workout_exercises: [...data.workout_exercises].sort(byPosition).map((we) => ({
+          ...we,
+          workout_sets: [...we.workout_sets].sort((a, b) => a.set_number - b.set_number),
+        })),
+      };
+    },
+  });
+
+export type SessionDetail = NonNullable<Awaited<ReturnType<NonNullable<ReturnType<typeof sessionQuery>["queryFn"]>>>>;
+export type SessionExercise = SessionDetail["workout_exercises"][number];
+
+/** Sets from the most recent completed session for each exercise (excluding the current session). */
+export const previousPerformanceQuery = (userId: string, sessionId: string, exerciseIds: string[]) =>
+  queryOptions({
+    queryKey: ["previous-perf", sessionId, [...exerciseIds].sort().join(",")],
+    queryFn: async () => {
+      const result: Record<string, { date: string | null; sets: WorkoutSet[] }> = {};
+      if (exerciseIds.length === 0) return result;
+      const { data: sessions, error } = await supabase
+        .from("workout_sessions")
+        .select("id, started_at")
+        .eq("user_id", userId)
+        .eq("status", "completed")
+        .neq("id", sessionId)
+        .order("started_at", { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      if (!sessions.length) return result;
+      const { data: wes, error: e2 } = await supabase
+        .from("workout_exercises")
+        .select("session_id, exercise_id, workout_sets(*)")
+        .in("session_id", sessions.map((s) => s.id))
+        .in("exercise_id", exerciseIds);
+      if (e2) throw e2;
+      for (const s of sessions) {
+        for (const we of wes.filter((w) => w.session_id === s.id)) {
+          if (result[we.exercise_id]) continue;
+          const done = we.workout_sets.filter((x) => x.completed).sort((a, b) => a.set_number - b.set_number);
+          if (done.length) result[we.exercise_id] = { date: s.started_at, sets: done };
+        }
+      }
+      return result;
+    },
+  });
+
+export const recordsQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["records", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("personal_records")
+        .select("*, exercises(id, name, muscle_group)")
+        .eq("user_id", userId)
+        .order("achieved_at", { ascending: false })
+        .limit(1000);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const sessionRecordsQuery = (sessionId: string) =>
+  queryOptions({
+    queryKey: ["records", "session", sessionId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("personal_records")
+        .select("*, exercises(id, name)")
+        .eq("session_id", sessionId);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+/** Every completed session with its validated sets, for analytics. */
+export const performanceQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["performance", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workout_sessions")
+        .select(
+          "id, name, started_at, duration_seconds, total_volume_kg, workout_exercises(id, exercise_id, position, exercises(id, name, muscle_group), workout_sets(id, set_number, weight_kg, reps, set_type, completed))",
+        )
+        .eq("user_id", userId)
+        .eq("status", "completed")
+        .order("started_at", { ascending: true })
+        .limit(1000);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export type PerformanceSession = Awaited<ReturnType<NonNullable<ReturnType<typeof performanceQuery>["queryFn"]>>>[number];

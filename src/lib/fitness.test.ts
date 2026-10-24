@@ -109,7 +109,7 @@ describe("exerciseBests", () => {
   it("takes the heaviest working set as max weight, ignoring warm-ups", () => {
     expect(exerciseBests(sets).find((b) => b.type === "max_weight")).toMatchObject({ value: 100, set_id: "a" });
   });
-  it("keeps the best estimated 1RM across sets (90 × 8 = 114 kg beats 100 × 5 = 116.7? no)", () => {
+  it("keeps the best estimated 1RM across sets (100 × 5 = 116.7 beats 90 × 8 = 114)", () => {
     expect(exerciseBests(sets).find((b) => b.type === "est_1rm")).toMatchObject({ value: 116.7, set_id: "a" });
   });
   it("returns nothing when no set was validated", () => {
