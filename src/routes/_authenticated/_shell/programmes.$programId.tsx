@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowDown, ArrowLeft, ArrowUp, Pencil, Play, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ClipboardList, Pencil, Play, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/app/ui";
@@ -15,7 +15,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { programQuery, type ProgramDetail } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { invalidateTraining, moveItem, reorderRows, startSession, WEEKDAYS } from "@/lib/workouts";
-import { ClipboardList } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_shell/programmes/$programId")({
   head: () => ({ meta: [{ title: "Programme — FitTracker" }] }),
@@ -328,7 +327,7 @@ function TemplateDialog({ programId, template, position = 0 }: { programId: stri
   const [days, setDays] = useState<number[]>(template?.weekdays ?? []);
   const save = useMutation({
     mutationFn: async () => {
-      const row = { name: name.trim(), weekdays: [...days].sort() };
+      const row = { name: name.trim(), weekdays: [...days].sort((a, b) => a - b) };
       const { error } = template
         ? await supabase.from("workout_templates").update(row).eq("id", template.id)
         : await supabase.from("workout_templates").insert({ ...row, program_id: programId, position });
