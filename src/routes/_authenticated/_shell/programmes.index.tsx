@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { EmptyState, PageHeader } from "@/components/app/ui";
 import { ConfirmDialog } from "@/components/app/workout/ConfirmDialog";
+import { WeekdayChips } from "@/components/app/workout/WeekdayChips";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { programsQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
-import { createProgram, duplicateProgram, invalidateTraining, PROGRAM_PRESETS, WEEKDAYS } from "@/lib/workouts";
+import { createProgram, duplicateProgram, invalidateTraining, PROGRAM_PRESETS } from "@/lib/workouts";
 
 export const Route = createFileRoute("/_authenticated/_shell/programmes/")({
   head: () => ({ meta: [{ title: "Programmes — FitTracker" }] }),
@@ -112,17 +113,6 @@ function ProgrammesPage() {
         </div>
       )}
     </>
-  );
-}
-
-export function WeekdayChips({ days }: { days: number[] }) {
-  if (!days.length) return null;
-  return (
-    <span className="flex gap-0.5">
-      {WEEKDAYS.filter((d) => days.includes(d.n)).map((d) => (
-        <span key={d.n} className="rounded border border-border px-1 py-px text-[10px] uppercase">{d.short}</span>
-      ))}
-    </span>
   );
 }
 
