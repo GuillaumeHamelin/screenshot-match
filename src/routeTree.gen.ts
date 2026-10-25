@@ -25,6 +25,7 @@ import { Route as AuthenticatedShellRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedShellCalendrierRouteImport } from './routes/_authenticated/_shell/calendrier'
 import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authenticated/_shell/dashboard'
+import { Route as AuthenticatedShellExercicesRouteImport } from './routes/_authenticated/_shell/exercices'
 import { Route as AuthenticatedShellNutritionRouteImport } from './routes/_authenticated/_shell/nutrition'
 import { Route as AuthenticatedShellObjectifsRouteImport } from './routes/_authenticated/_shell/objectifs'
 import { Route as AuthenticatedShellParametresRouteImport } from './routes/_authenticated/_shell/parametres'
@@ -114,6 +115,12 @@ const AuthenticatedShellDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedShellRouteRoute,
   } as any)
+const AuthenticatedShellExercicesRoute =
+  AuthenticatedShellExercicesRouteImport.update({
+    id: '/exercices',
+    path: '/exercices',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
 const AuthenticatedShellNutritionRoute =
   AuthenticatedShellNutritionRouteImport.update({
     id: '/nutrition',
@@ -178,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/exercices': typeof AuthenticatedShellExercicesRoute
   '/nutrition': typeof AuthenticatedShellNutritionRoute
   '/objectifs': typeof AuthenticatedShellObjectifsRoute
   '/parametres': typeof AuthenticatedShellParametresRoute
@@ -202,6 +210,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/exercices': typeof AuthenticatedShellExercicesRoute
   '/nutrition': typeof AuthenticatedShellNutritionRoute
   '/objectifs': typeof AuthenticatedShellObjectifsRoute
   '/parametres': typeof AuthenticatedShellParametresRoute
@@ -229,6 +238,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/_shell/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/_authenticated/_shell/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/_authenticated/_shell/exercices': typeof AuthenticatedShellExercicesRoute
   '/_authenticated/_shell/nutrition': typeof AuthenticatedShellNutritionRoute
   '/_authenticated/_shell/objectifs': typeof AuthenticatedShellObjectifsRoute
   '/_authenticated/_shell/parametres': typeof AuthenticatedShellParametresRoute
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/calendrier'
     | '/dashboard'
+    | '/exercices'
     | '/nutrition'
     | '/objectifs'
     | '/parametres'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/calendrier'
     | '/dashboard'
+    | '/exercices'
     | '/nutrition'
     | '/objectifs'
     | '/parametres'
@@ -305,6 +317,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/_shell/calendrier'
     | '/_authenticated/_shell/dashboard'
+    | '/_authenticated/_shell/exercices'
     | '/_authenticated/_shell/nutrition'
     | '/_authenticated/_shell/objectifs'
     | '/_authenticated/_shell/parametres'
@@ -444,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellDashboardRouteImport
       parentRoute: typeof AuthenticatedShellRouteRoute
     }
+    '/_authenticated/_shell/exercices': {
+      id: '/_authenticated/_shell/exercices'
+      path: '/exercices'
+      fullPath: '/exercices'
+      preLoaderRoute: typeof AuthenticatedShellExercicesRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
     '/_authenticated/_shell/nutrition': {
       id: '/_authenticated/_shell/nutrition'
       path: '/nutrition'
@@ -506,6 +526,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedShellRouteRouteChildren {
   AuthenticatedShellCalendrierRoute: typeof AuthenticatedShellCalendrierRoute
   AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
+  AuthenticatedShellExercicesRoute: typeof AuthenticatedShellExercicesRoute
   AuthenticatedShellNutritionRoute: typeof AuthenticatedShellNutritionRoute
   AuthenticatedShellObjectifsRoute: typeof AuthenticatedShellObjectifsRoute
   AuthenticatedShellParametresRoute: typeof AuthenticatedShellParametresRoute
@@ -520,6 +541,7 @@ const AuthenticatedShellRouteRouteChildren: AuthenticatedShellRouteRouteChildren
   {
     AuthenticatedShellCalendrierRoute: AuthenticatedShellCalendrierRoute,
     AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
+    AuthenticatedShellExercicesRoute: AuthenticatedShellExercicesRoute,
     AuthenticatedShellNutritionRoute: AuthenticatedShellNutritionRoute,
     AuthenticatedShellObjectifsRoute: AuthenticatedShellObjectifsRoute,
     AuthenticatedShellParametresRoute: AuthenticatedShellParametresRoute,
