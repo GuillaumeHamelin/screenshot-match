@@ -32,6 +32,7 @@ import { Route as AuthenticatedShellParametresRouteImport } from './routes/_auth
 import { Route as AuthenticatedShellPerformancesRouteImport } from './routes/_authenticated/_shell/performances'
 import { Route as AuthenticatedShellPhysiqueRouteImport } from './routes/_authenticated/_shell/physique'
 import { Route as AuthenticatedShellProfilRouteImport } from './routes/_authenticated/_shell/profil'
+import { Route as AuthenticatedShellEntrainementsIndexRouteImport } from './routes/_authenticated/_shell/entrainements.index'
 import { Route as AuthenticatedShellProgrammesIndexRouteImport } from './routes/_authenticated/_shell/programmes.index'
 import { Route as AuthenticatedShellProgrammesProgramIdRouteImport } from './routes/_authenticated/_shell/programmes.$programId'
 
@@ -157,6 +158,12 @@ const AuthenticatedShellProfilRoute =
     path: '/profil',
     getParentRoute: () => AuthenticatedShellRouteRoute,
   } as any)
+const AuthenticatedShellEntrainementsIndexRoute =
+  AuthenticatedShellEntrainementsIndexRouteImport.update({
+    id: '/entrainements/',
+    path: '/entrainements/',
+    getParentRoute: () => AuthenticatedShellRouteRoute,
+  } as any)
 const AuthenticatedShellProgrammesIndexRoute =
   AuthenticatedShellProgrammesIndexRouteImport.update({
     id: '/programmes/',
@@ -193,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/physique': typeof AuthenticatedShellPhysiqueRoute
   '/profil': typeof AuthenticatedShellProfilRoute
   '/programmes/$programId': typeof AuthenticatedShellProgrammesProgramIdRoute
+  '/entrainements/': typeof AuthenticatedShellEntrainementsIndexRoute
   '/programmes/': typeof AuthenticatedShellProgrammesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/physique': typeof AuthenticatedShellPhysiqueRoute
   '/profil': typeof AuthenticatedShellProfilRoute
   '/programmes/$programId': typeof AuthenticatedShellProgrammesProgramIdRoute
+  '/entrainements': typeof AuthenticatedShellEntrainementsIndexRoute
   '/programmes': typeof AuthenticatedShellProgrammesIndexRoute
 }
 export interface FileRoutesById {
@@ -246,6 +255,7 @@ export interface FileRoutesById {
   '/_authenticated/_shell/physique': typeof AuthenticatedShellPhysiqueRoute
   '/_authenticated/_shell/profil': typeof AuthenticatedShellProfilRoute
   '/_authenticated/_shell/programmes/$programId': typeof AuthenticatedShellProgrammesProgramIdRoute
+  '/_authenticated/_shell/entrainements/': typeof AuthenticatedShellEntrainementsIndexRoute
   '/_authenticated/_shell/programmes/': typeof AuthenticatedShellProgrammesIndexRoute
 }
 export interface FileRouteTypes {
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/physique'
     | '/profil'
     | '/programmes/$programId'
+    | '/entrainements/'
     | '/programmes/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/physique'
     | '/profil'
     | '/programmes/$programId'
+    | '/entrainements'
     | '/programmes'
   id:
     | '__root__'
@@ -325,6 +337,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_shell/physique'
     | '/_authenticated/_shell/profil'
     | '/_authenticated/_shell/programmes/$programId'
+    | '/_authenticated/_shell/entrainements/'
     | '/_authenticated/_shell/programmes/'
   fileRoutesById: FileRoutesById
 }
@@ -506,6 +519,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellProfilRouteImport
       parentRoute: typeof AuthenticatedShellRouteRoute
     }
+    '/_authenticated/_shell/entrainements/': {
+      id: '/_authenticated/_shell/entrainements/'
+      path: '/entrainements'
+      fullPath: '/entrainements/'
+      preLoaderRoute: typeof AuthenticatedShellEntrainementsIndexRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
     '/_authenticated/_shell/programmes/': {
       id: '/_authenticated/_shell/programmes/'
       path: '/programmes'
@@ -534,6 +554,7 @@ interface AuthenticatedShellRouteRouteChildren {
   AuthenticatedShellPhysiqueRoute: typeof AuthenticatedShellPhysiqueRoute
   AuthenticatedShellProfilRoute: typeof AuthenticatedShellProfilRoute
   AuthenticatedShellProgrammesProgramIdRoute: typeof AuthenticatedShellProgrammesProgramIdRoute
+  AuthenticatedShellEntrainementsIndexRoute: typeof AuthenticatedShellEntrainementsIndexRoute
   AuthenticatedShellProgrammesIndexRoute: typeof AuthenticatedShellProgrammesIndexRoute
 }
 
@@ -550,6 +571,8 @@ const AuthenticatedShellRouteRouteChildren: AuthenticatedShellRouteRouteChildren
     AuthenticatedShellProfilRoute: AuthenticatedShellProfilRoute,
     AuthenticatedShellProgrammesProgramIdRoute:
       AuthenticatedShellProgrammesProgramIdRoute,
+    AuthenticatedShellEntrainementsIndexRoute:
+      AuthenticatedShellEntrainementsIndexRoute,
     AuthenticatedShellProgrammesIndexRoute:
       AuthenticatedShellProgrammesIndexRoute,
   }
