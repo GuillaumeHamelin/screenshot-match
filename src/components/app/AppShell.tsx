@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
-import { avatarUrlQuery, profileQuery } from "@/lib/queries";
+import { activeSessionQuery, avatarUrlQuery, profileQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { APP_NAV } from "./nav";
 
@@ -40,6 +40,7 @@ export function UserAvatar({ className }: { className?: string }) {
 export function AppShell() {
   const { user } = useRouteContext({ from: "/_authenticated" });
   const { data: profile } = useQuery(profileQuery(user.id));
+  const { data: activeSession } = useQuery(activeSessionQuery(user.id));
   const { pathname } = useLocation();
   const signOut = useSignOut();
   const [collapsed, setCollapsed] = useState(false);
@@ -133,6 +134,21 @@ export function AppShell() {
       </header>
 
       <main className={cn("pb-32 transition-[padding] duration-300 md:pb-14", collapsed ? "md:pl-[76px]" : "md:pl-64")}>
+        {activeSession && !pathname.startsWith(`/entrainements/${activeSession.id}`) && (
+          <Link
+            to="/entrainements/$sessionId"
+            params={{ sessionId: activeSession.id }}
+            className="sticky top-16 z-20 flex items-center justify-between gap-3 border-b border-foreground/30 bg-surface/95 px-4 py-2.5 text-sm shadow-glow backdrop-blur md:top-0 md:px-8"
+          >
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-foreground" />
+              <span className="truncate">
+                Séance en cours : <span className="font-semibold">{activeSession.name}</span>
+              </span>
+            </span>
+            <span className="shrink-0 font-display text-xs font-bold uppercase tracking-widest">Reprendre</span>
+          </Link>
+        )}
         <div key={pathname} className="mx-auto w-full max-w-7xl animate-fade-up px-4 py-6 md:px-8 md:py-10">
           <Outlet />
         </div>
@@ -144,12 +160,16 @@ export function AppShell() {
           <MobileTab to="/dashboard" label="Accueil" icon={LayoutDashboard} />
           <MobileTab to="/nutrition" label="Nutrition" icon={Apple} />
           <Link
-            to="/entrainements"
-            className="mx-auto -mt-8 flex h-16 w-16 flex-col items-center justify-center rounded-2xl border border-foreground/30 bg-primary text-primary-foreground shadow-glow-strong"
-            aria-label="Séance"
+            to={activeSession ? "/entrainements/$sessionId" : "/entrainements"}
+            params={{ sessionId: activeSession?.id ?? "" }}
+            className="relative mx-auto -mt-8 flex h-16 w-16 flex-col items-center justify-center rounded-2xl border border-foreground/30 bg-primary text-primary-foreground shadow-glow-strong"
+            aria-label={activeSession ? "Reprendre la séance en cours" : "Séance"}
           >
+            {activeSession && <span className="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full border-2 border-background bg-foreground" />}
             <Dumbbell className="h-6 w-6" />
-            <span className="mt-0.5 font-display text-[10px] font-bold uppercase tracking-widest">Séance</span>
+            <span className="mt-0.5 font-display text-[10px] font-bold uppercase tracking-widest">
+              {activeSession ? "En cours" : "Séance"}
+            </span>
           </Link>
           <MobileTab to="/physique" label="Physique" icon={Ruler} />
           <Sheet open={moreOpen} onOpenChange={setMoreOpen}>

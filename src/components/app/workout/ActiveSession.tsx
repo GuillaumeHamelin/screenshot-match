@@ -491,8 +491,14 @@ function SetRow({
     }
     const w = parseWeight(weight);
     const r = parseReps(reps);
-    if (!w.ok || !r.ok) return toast.error("Vérifie la charge et les répétitions.");
-    if (!r.value) return toast.error("Indique le nombre de répétitions.");
+    if (!w.ok || !r.ok) {
+      toast.error("Vérifie la charge et les répétitions.");
+      return;
+    }
+    if (!r.value) {
+      toast.error("Indique le nombre de répétitions.");
+      return;
+    }
     save({ weight_kg: w.value, reps: r.value, completed: true });
     navigator.vibrate?.(30);
     onDone();
