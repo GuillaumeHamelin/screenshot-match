@@ -154,7 +154,7 @@ function PerformancesPage() {
                   <XAxis dataKey="label" stroke="var(--color-muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
                   <YAxis stroke="var(--color-muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
                   <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--color-accent)" }} formatter={(v: number, n) => (n === "volume" ? `${nf.format(v)} kg` : v)} />
-                  <Bar dataKey="volume" name="volume" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="volume" name="volume" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} maxBarSize={48} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
