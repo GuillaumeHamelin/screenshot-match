@@ -160,12 +160,16 @@ export function AppShell() {
           <MobileTab to="/dashboard" label="Accueil" icon={LayoutDashboard} />
           <MobileTab to="/nutrition" label="Nutrition" icon={Apple} />
           <Link
-            to="/entrainements"
-            className="mx-auto -mt-8 flex h-16 w-16 flex-col items-center justify-center rounded-2xl border border-foreground/30 bg-primary text-primary-foreground shadow-glow-strong"
-            aria-label="Séance"
+            to={activeSession ? "/entrainements/$sessionId" : "/entrainements"}
+            params={activeSession ? { sessionId: activeSession.id } : undefined}
+            className="relative mx-auto -mt-8 flex h-16 w-16 flex-col items-center justify-center rounded-2xl border border-foreground/30 bg-primary text-primary-foreground shadow-glow-strong"
+            aria-label={activeSession ? "Reprendre la séance en cours" : "Séance"}
           >
+            {activeSession && <span className="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full border-2 border-background bg-foreground" />}
             <Dumbbell className="h-6 w-6" />
-            <span className="mt-0.5 font-display text-[10px] font-bold uppercase tracking-widest">Séance</span>
+            <span className="mt-0.5 font-display text-[10px] font-bold uppercase tracking-widest">
+              {activeSession ? "En cours" : "Séance"}
+            </span>
           </Link>
           <MobileTab to="/physique" label="Physique" icon={Ruler} />
           <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
