@@ -18,3 +18,6 @@
 - User files go in private buckets under `<user_id>/...`; display via signed URLs.
 - Account deletion goes through `deleteMyAccount` (server function: `delete_my_data` RPC, then admin user delete). Add new user tables to that RPC and to the export list in Paramètres.
 - Dark-only design: tokens in `src/styles.css`; no light theme.
+- Workout writes (start/finish/delete session, programs, reorder) live in `src/lib/workouts.ts`; call `invalidateTraining(qc)` after them. Why: one place keeps sessions, records, performances and dashboard in sync.
+- Personal records are computed only when a session is finished (`finishSession`, using `exerciseBests`/`detectRecords`); deleting a session deletes its records. Warm-ups and unvalidated sets never count. Why: records must match logged data.
+- Fixed overlays inside the app shell (e.g. rest timer) render through a portal to `document.body`. Why: the shell's page wrapper is animated with a transform, which traps `position: fixed`.
