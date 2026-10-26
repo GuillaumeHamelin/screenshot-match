@@ -305,3 +305,92 @@ export const performanceQuery = (userId: string) =>
   queryOptions({ queryKey: ["performance", userId], queryFn: () => fetchPerformance(userId) });
 
 export type PerformanceSession = Awaited<ReturnType<typeof fetchPerformance>>[number];
+
+// ───────────────────────── Nutrition ─────────────────────────
+
+export type Food = Database["public"]["Tables"]["foods"]["Row"];
+
+async function fetchNutritionDay(userId: string, date: string) {
+  const [meals, water] = await Promise.all([
+    supabase
+      .from("meals")
+      .select(
+        "id, meal_type, meal_items(*, foods(id, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g))",
+      )
+      .eq("user_id", userId)
+      .eq("eaten_on", date),
+    supabase
+      .from("water_intake")
+      .select("id, amount_ml, created_at")
+      .eq("user_id", userId)
+      .eq("drank_on", date)
+      .order("created_at", { ascending: true }),
+  ]);
+  if (meals.error) throw meals.error;
+  if (water.error) throw water.error;
+  const items = meals.data
+    .flatMap((m) => m.meal_items.map((i) => ({ ...i, meal_type: m.meal_type })))
+    .sort((a, b) => a.created_at.localeCompare(b.created_at));
+  return { items, water: water.data };
+}
+
+export const nutritionDayQuery = (userId: string, date: string) =>
+  queryOptions({ queryKey: ["nutrition-day", userId, date], queryFn: () => fetchNutritionDay(userId, date) });
+
+export type NutritionDay = Awaited<ReturnType<typeof fetchNutritionDay>>;
+export type LoggedItem = NutritionDay["items"][number];
+
+export const foodsQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["foods", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("foods")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+async function fetchRecipes(userId: string) {
+  const { data, error } = await supabase
+    .from("saved_recipes")
+    .select("*, saved_recipe_items(*)")
+    .eq("user_id", userId)
+    .order("is_favorite", { ascending: false })
+    .order("name", { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+export const recipesQuery = (userId: string) =>
+  queryOptions({ queryKey: ["recipes", userId], queryFn: () => fetchRecipes(userId) });
+
+export type Recipe = Awaited<ReturnType<typeof fetchRecipes>>[number];
+
+export const nutritionHistoryQuery = (userId: string, from: string, to: string) =>
+  queryOptions({
+    queryKey: ["nutrition-history", userId, from, to],
+    queryFn: async () => {
+      const [meals, water] = await Promise.all([
+        supabase
+          .from("meals")
+          .select("eaten_on, meal_items(calories, protein_g, carbs_g, fat_g)")
+          .eq("user_id", userId)
+          .gte("eaten_on", from)
+          .lte("eaten_on", to),
+        supabase
+          .from("water_intake")
+          .select("drank_on, amount_ml")
+          .eq("user_id", userId)
+          .gte("drank_on", from)
+          .lte("drank_on", to),
+      ]);
+      if (meals.error) throw meals.error;
+      if (water.error) throw water.error;
+      return { meals: meals.data, water: water.data };
+    },
+  });
