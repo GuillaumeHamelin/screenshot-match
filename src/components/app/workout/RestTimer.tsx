@@ -1,5 +1,6 @@
 import { Minus, Plus, SkipForward, TimerReset } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatClock } from "@/lib/fitness";
@@ -91,9 +92,10 @@ export function useRestTimer(sessionId: string) {
 }
 
 export function RestTimerBar({ timer }: { timer: ReturnType<typeof useRestTimer> }) {
-  if (!timer.rest) return null;
+  if (!timer.rest || typeof document === "undefined") return null;
   const pct = Math.min(100, (timer.remaining / timer.rest.total) * 100);
-  return (
+  // Portal: the page wrapper is animated (transform), which would trap a fixed element.
+  return createPortal(
     <div className="fixed inset-x-0 bottom-[calc(76px+env(safe-area-inset-bottom))] z-40 px-3 md:bottom-6 md:left-auto md:right-6 md:w-[380px] md:px-0">
       <div className="panel overflow-hidden border-foreground/40 shadow-glow-strong" role="timer" aria-live="polite">
         <div className="h-1 bg-muted">
@@ -114,6 +116,7 @@ export function RestTimerBar({ timer }: { timer: ReturnType<typeof useRestTimer>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
