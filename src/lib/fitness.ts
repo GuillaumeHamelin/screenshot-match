@@ -302,3 +302,112 @@ export const SET_TYPE_LABELS: Record<SetType, string> = {
   dropset: "Dégressive",
   failure: "Échec",
 };
+
+// ───────────────────────── Nutrition ─────────────────────────
+
+export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
+
+export const MEAL_TYPES: { key: MealType; label: string; short: string }[] = [
+  { key: "breakfast", label: "Petit-déjeuner", short: "au petit-déjeuner" },
+  { key: "lunch", label: "Déjeuner", short: "au déjeuner" },
+  { key: "dinner", label: "Dîner", short: "au dîner" },
+  { key: "snack", label: "Collations", short: "aux collations" },
+];
+
+/** kJ → kcal (1 kcal = 4.184 kJ). */
+export const KJ_PER_KCAL = 4.184;
+
+/**
+ * Values per 100 g from Open Food Facts `nutriments`.
+ * Returns null when energy, protein, carbs or fat is missing or impossible — values are never guessed.
+ * Energy in kcal falls back to the kJ value converted.
+ */
+export function per100FromOff(n: Record<string, unknown> | null | undefined): Per100 | null {
+  if (!n) return null;
+  const num = (k: string): number | null => {
+    const raw = n[k];
+    const v = typeof raw === "string" && raw.trim() !== "" ? Number(raw) : raw;
+    return typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : null;
+  };
+  let kcal = num("energy-kcal_100g");
+  if (kcal == null) {
+    const kj = num("energy-kj_100g") ?? num("energy_100g");
+    if (kj != null) kcal = kj / KJ_PER_KCAL;
+  }
+  const protein = num("proteins_100g");
+  const carbs = num("carbohydrates_100g");
+  const fat = num("fat_100g");
+  if (kcal == null || protein == null || carbs == null || fat == null) return null;
+  const values = { calories: Math.round(kcal), protein: round1(protein), carbs: round1(carbs), fat: round1(fat) };
+  return validatePer100(values) ? null : values;
+}
+
+/** Error message for impossible values per 100 g, or null when they are valid. */
+export function validatePer100(v: Per100): string | null {
+  const ok = (x: number) => Number.isFinite(x) && x >= 0;
+  if (!ok(v.calories) || v.calories > 900) return "Calories : entre 0 et 900 kcal pour 100 g.";
+  if (!ok(v.protein) || v.protein > 100) return "Protéines : entre 0 et 100 g pour 100 g.";
+  if (!ok(v.carbs) || v.carbs > 100) return "Glucides : entre 0 et 100 g pour 100 g.";
+  if (!ok(v.fat) || v.fat > 100) return "Lipides : entre 0 et 100 g pour 100 g.";
+  if (v.protein + v.carbs + v.fat > 100.5) return "Protéines + glucides + lipides ne peuvent pas dépasser 100 g pour 100 g.";
+  return null;
+}
+
+/** Energy from macros: 4 kcal/g protein and carbs, 9 kcal/g fat. */
+export function kcalFromMacros(protein: number, carbs: number, fat: number): number {
+  return Math.round(protein * 4 + carbs * 4 + fat * 9);
+}
+
+/** Back out values per 100 g from a logged item (used when the original food was deleted). */
+export function per100FromTotals(
+  item: { calories: number; protein_g: number; carbs_g: number; fat_g: number },
+  grams: number,
+): Per100 {
+  if (!(grams > 0)) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+  const f = 100 / grams;
+  return {
+    calories: Number(item.calories) * f,
+    protein: Number(item.protein_g) * f,
+    carbs: Number(item.carbs_g) * f,
+    fat: Number(item.fat_g) * f,
+  };
+}
+
+export type DayNutrition = { date: string; items: number } & MacroTotals & { waterMl: number };
+
+/**
+ * Daily averages over the days that were actually logged:
+ * food averages count only days with at least one food, water averages only days with water.
+ */
+export function nutritionAverages(days: DayNutrition[]) {
+  const food = days.filter((d) => d.items > 0);
+  const water = days.filter((d) => d.waterMl > 0);
+  const avg = (rows: DayNutrition[], k: "calories" | "protein" | "carbs" | "fat" | "waterMl") =>
+    rows.length ? rows.reduce((s, d) => s + d[k], 0) / rows.length : 0;
+  return {
+    foodDays: food.length,
+    waterDays: water.length,
+    calories: Math.round(avg(food, "calories")),
+    protein: round1(avg(food, "protein")),
+    carbs: round1(avg(food, "carbs")),
+    fat: round1(avg(food, "fat")),
+    waterMl: Math.round(avg(water, "waterMl")),
+  };
+}
+
+/** Last `count` local dates ending at `end` (oldest first). */
+export function lastDates(count: number, end: Date = new Date()): string[] {
+  return Array.from({ length: count }, (_, i) => {
+    const d = new Date(end);
+    d.setDate(d.getDate() - (count - 1 - i));
+    return toISODate(d);
+  });
+}
+
+/** Add days to a YYYY-MM-DD date, in local time. */
+export function shiftISODate(iso: string, days: number): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(y!, m! - 1, d!);
+  date.setDate(date.getDate() + days);
+  return toISODate(date);
+}
