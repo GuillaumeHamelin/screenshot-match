@@ -161,7 +161,7 @@ export function AppShell() {
           <MobileTab to="/nutrition" label="Nutrition" icon={Apple} />
           <Link
             to={activeSession ? "/entrainements/$sessionId" : "/entrainements"}
-            params={activeSession ? { sessionId: activeSession.id } : undefined}
+            params={{ sessionId: activeSession?.id ?? "" }}
             className="relative mx-auto -mt-8 flex h-16 w-16 flex-col items-center justify-center rounded-2xl border border-foreground/30 bg-primary text-primary-foreground shadow-glow-strong"
             aria-label={activeSession ? "Reprendre la séance en cours" : "Séance"}
           >
