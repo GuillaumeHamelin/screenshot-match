@@ -38,7 +38,12 @@ export function FoodFormDialog({
   const qc = useQueryClient();
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
-  const [vals, setVals] = useState<Record<Key, string>>({ calories: "", protein: "", carbs: "", fat: "" });
+  const [vals, setVals] = useState<Record<Key, string>>({
+    calories: "",
+    protein: "",
+    carbs: "",
+    fat: "",
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -53,20 +58,32 @@ export function FoodFormDialog({
   }, [open, food]);
 
   const n = (k: Key) => parseNum(vals[k]);
-  const fromMacros =
-    [n("protein"), n("carbs"), n("fat")].every((x) => x != null && !Number.isNaN(x))
-      ? kcalFromMacros(n("protein")!, n("carbs")!, n("fat")!)
-      : null;
+  const fromMacros = [n("protein"), n("carbs"), n("fat")].every(
+    (x) => x != null && !Number.isNaN(x),
+  )
+    ? kcalFromMacros(n("protein")!, n("carbs")!, n("fat")!)
+    : null;
 
   const save = useMutation({
     mutationFn: async () => {
       if (!name.trim()) throw new Error("Donne un nom à l'aliment.");
       const missing = FIELDS.find((f) => n(f.key) == null || Number.isNaN(n(f.key)));
-      if (missing) throw new Error(`${missing.label} : indique une valeur pour 100 g (0 si aucune).`);
-      const per100 = { calories: n("calories")!, protein: n("protein")!, carbs: n("carbs")!, fat: n("fat")! };
+      if (missing)
+        throw new Error(`${missing.label} : indique une valeur pour 100 g (0 si aucune).`);
+      const per100 = {
+        calories: n("calories")!,
+        protein: n("protein")!,
+        carbs: n("carbs")!,
+        fat: n("fat")!,
+      };
       const err = validatePer100(per100);
       if (err) throw new Error(err);
-      return saveCustomFood({ id: food?.id ?? null, name: name.trim().slice(0, 120), brand: brand.trim().slice(0, 80) || null, per100 });
+      return saveCustomFood({
+        id: food?.id ?? null,
+        name: name.trim().slice(0, 120),
+        brand: brand.trim().slice(0, 80) || null,
+        per100,
+      });
     },
     onSuccess: (id) => {
       invalidateNutrition(qc);
@@ -81,8 +98,12 @@ export function FoodFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto border-border bg-surface sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl uppercase">{food ? "Modifier l'aliment" : "Nouvel aliment"}</DialogTitle>
-          <DialogDescription>Valeurs pour 100 g, telles qu'indiquées sur l'étiquette.</DialogDescription>
+          <DialogTitle className="font-display text-2xl uppercase">
+            {food ? "Modifier l'aliment" : "Nouvel aliment"}
+          </DialogTitle>
+          <DialogDescription>
+            Valeurs pour 100 g, telles qu'indiquées sur l'étiquette.
+          </DialogDescription>
         </DialogHeader>
         <form
           className="space-y-4"
@@ -94,13 +115,26 @@ export function FoodFormDialog({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="food-name">Nom</Label>
-              <Input id="food-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} className="h-11" placeholder="Ex. Flocons d'avoine" />
+              <Input
+                id="food-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={120}
+                className="h-11"
+                placeholder="Ex. Flocons d'avoine"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="food-brand">
                 Marque <span className="text-muted-foreground">(facultatif)</span>
               </Label>
-              <Input id="food-brand" value={brand} onChange={(e) => setBrand(e.target.value)} maxLength={80} className="h-11" />
+              <Input
+                id="food-brand"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                maxLength={80}
+                className="h-11"
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -113,14 +147,18 @@ export function FoodFormDialog({
                   id={`food-${f.key}`}
                   inputMode="decimal"
                   value={vals[f.key]}
-                  onChange={(e) => setVals({ ...vals, [f.key]: e.target.value.replace(/[^\d.,]/g, "") })}
+                  onChange={(e) =>
+                    setVals({ ...vals, [f.key]: e.target.value.replace(/[^\d.,]/g, "") })
+                  }
                   className="h-11"
                 />
               </div>
             ))}
           </div>
           {fromMacros != null && (
-            <p className="text-xs text-muted-foreground">D'après les macros : environ {fromMacros} kcal pour 100 g.</p>
+            <p className="text-xs text-muted-foreground">
+              D'après les macros : environ {fromMacros} kcal pour 100 g.
+            </p>
           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
@@ -136,11 +174,24 @@ export function FoodFormDialog({
   );
 }
 
-export function MacroLine({ calories, protein, carbs, fat, suffix }: { calories: number; protein: number; carbs: number; fat: number; suffix?: ReactNode }) {
+export function MacroLine({
+  calories,
+  protein,
+  carbs,
+  fat,
+  suffix,
+}: {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  suffix?: ReactNode;
+}) {
   const nf = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
   return (
     <span className="text-xs text-muted-foreground">
-      {nf.format(calories)} kcal · P {nf.format(protein)} g · G {nf.format(carbs)} g · L {nf.format(fat)} g{suffix}
+      {nf.format(calories)} kcal · P {nf.format(protein)} g · G {nf.format(carbs)} g · L{" "}
+      {nf.format(fat)} g{suffix}
     </span>
   );
 }

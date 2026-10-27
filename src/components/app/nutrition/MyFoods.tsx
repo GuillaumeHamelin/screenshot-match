@@ -6,7 +6,13 @@ import { EmptyState, Panel } from "@/components/app/ui";
 import { ConfirmDialog } from "@/components/app/workout/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { macrosForQuantity, sumMacros } from "@/lib/fitness";
-import { deleteFood, deleteRecipe, displayName, invalidateNutrition, setRecipeFavorite } from "@/lib/nutrition";
+import {
+  deleteFood,
+  deleteRecipe,
+  displayName,
+  invalidateNutrition,
+  setRecipeFavorite,
+} from "@/lib/nutrition";
 import { foodsQuery, recipesQuery, type Food } from "@/lib/queries";
 import { FoodFormDialog, MacroLine } from "./FoodFormDialog";
 
@@ -58,7 +64,11 @@ export function MyFoods({ userId }: { userId: string }) {
         }
       >
         {foods.length === 0 ? (
-          <EmptyState icon={UtensilsCrossed} title="Pas encore d'aliment" text="Crée un aliment avec les valeurs de son étiquette, ou ajoute un produit depuis la recherche." />
+          <EmptyState
+            icon={UtensilsCrossed}
+            title="Pas encore d'aliment"
+            text="Crée un aliment avec les valeurs de son étiquette, ou ajoute un produit depuis la recherche."
+          />
         ) : (
           <ul className="divide-y divide-border">
             {foods.map((f) => (
@@ -96,7 +106,12 @@ export function MyFoods({ userId }: { userId: string }) {
                   confirmLabel="Supprimer"
                   onConfirm={() => removeFood.mutate(f.id)}
                   trigger={
-                    <Button size="icon" variant="ghost" className="h-9 w-9" aria-label={`Supprimer ${f.name}`}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-9 w-9"
+                      aria-label={`Supprimer ${f.name}`}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   }
@@ -109,17 +124,31 @@ export function MyFoods({ userId }: { userId: string }) {
 
       <Panel title={`Mes repas (${recipes.length})`} icon={Star}>
         {recipes.length === 0 ? (
-          <EmptyState icon={Star} title="Aucun repas enregistré" text="Dans ton journal, utilise « Enregistrer comme repas » sous un repas." />
+          <EmptyState
+            icon={Star}
+            title="Aucun repas enregistré"
+            text="Dans ton journal, utilise « Enregistrer comme repas » sous un repas."
+          />
         ) : (
           <ul className="divide-y divide-border">
             {recipes.map((r) => {
               const t = sumMacros(
                 r.saved_recipe_items.map((i) => {
                   const m = macrosForQuantity(
-                    { calories: Number(i.calories_per_100g), protein: Number(i.protein_per_100g), carbs: Number(i.carbs_per_100g), fat: Number(i.fat_per_100g) },
+                    {
+                      calories: Number(i.calories_per_100g),
+                      protein: Number(i.protein_per_100g),
+                      carbs: Number(i.carbs_per_100g),
+                      fat: Number(i.fat_per_100g),
+                    },
                     Number(i.quantity_g),
                   );
-                  return { calories: m.calories, protein_g: m.protein, carbs_g: m.carbs, fat_g: m.fat };
+                  return {
+                    calories: m.calories,
+                    protein_g: m.protein,
+                    carbs_g: m.carbs,
+                    fat_g: m.fat,
+                  };
                 }),
               );
               return (
@@ -144,7 +173,12 @@ export function MyFoods({ userId }: { userId: string }) {
                       ))}
                     </ul>
                     <p className="mt-1">
-                      <MacroLine calories={t.calories} protein={t.protein} carbs={t.carbs} fat={t.fat} />
+                      <MacroLine
+                        calories={t.calories}
+                        protein={t.protein}
+                        carbs={t.carbs}
+                        fat={t.fat}
+                      />
                     </p>
                   </div>
                   <ConfirmDialog
@@ -153,7 +187,12 @@ export function MyFoods({ userId }: { userId: string }) {
                     confirmLabel="Supprimer"
                     onConfirm={() => removeRecipe.mutate(r.id)}
                     trigger={
-                      <Button size="icon" variant="ghost" className="h-9 w-9 shrink-0" aria-label={`Supprimer ${r.name}`}>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-9 w-9 shrink-0"
+                        aria-label={`Supprimer ${r.name}`}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     }

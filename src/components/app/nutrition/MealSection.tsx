@@ -15,7 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { sumMacros, type MealType } from "@/lib/fitness";
-import { deleteMealItem, invalidateNutrition, saveItemsAsRecipe, updateItemQuantity } from "@/lib/nutrition";
+import {
+  deleteMealItem,
+  invalidateNutrition,
+  saveItemsAsRecipe,
+  updateItemQuantity,
+} from "@/lib/nutrition";
 import type { LoggedItem } from "@/lib/queries";
 import { MacroLine } from "./FoodFormDialog";
 
@@ -38,7 +43,8 @@ export function MealSection({
   const [recipeName, setRecipeName] = useState("");
 
   const update = useMutation({
-    mutationFn: ({ item, grams }: { item: LoggedItem; grams: number }) => updateItemQuantity(item, grams),
+    mutationFn: ({ item, grams }: { item: LoggedItem; grams: number }) =>
+      updateItemQuantity(item, grams),
     onSuccess: () => {
       invalidateNutrition(qc);
       setEditing(null);
@@ -68,7 +74,8 @@ export function MealSection({
       title={label}
       action={
         <span className="font-display text-lg font-bold">
-          {nf.format(totals.calories)} <span className="text-xs font-semibold text-muted-foreground">kcal</span>
+          {nf.format(totals.calories)}{" "}
+          <span className="text-xs font-semibold text-muted-foreground">kcal</span>
         </span>
       }
     >
@@ -82,7 +89,12 @@ export function MealSection({
               <li key={i.id} className="flex items-center gap-3 py-2.5">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{i.food_name}</p>
-                  <MacroLine calories={Number(i.calories)} protein={Number(i.protein_g)} carbs={Number(i.carbs_g)} fat={Number(i.fat_g)} />
+                  <MacroLine
+                    calories={Number(i.calories)}
+                    protein={Number(i.protein_g)}
+                    carbs={Number(i.carbs_g)}
+                    fat={Number(i.fat_g)}
+                  />
                 </div>
                 {isEditing ? (
                   <form
@@ -91,9 +103,9 @@ export function MealSection({
                       e.preventDefault();
                       const g = Number(editing.grams);
                       if (!(g > 0 && g <= 5000)) {
-          toast.error("Quantité : entre 1 et 5000 g.");
-          return;
-        }
+                        toast.error("Quantité : entre 1 et 5000 g.");
+                        return;
+                      }
                       update.mutate({ item: i, grams: g });
                     }}
                   >
@@ -101,15 +113,34 @@ export function MealSection({
                       autoFocus
                       inputMode="decimal"
                       value={editing.grams}
-                      onChange={(e) => setEditing({ id: i.id, grams: e.target.value.replace(",", ".").replace(/[^\d.]/g, "") })}
+                      onChange={(e) =>
+                        setEditing({
+                          id: i.id,
+                          grams: e.target.value.replace(",", ".").replace(/[^\d.]/g, ""),
+                        })
+                      }
                       className="h-9 w-20"
                       aria-label="Quantité en grammes"
                     />
                     <span className="text-xs text-muted-foreground">g</span>
-                    <Button type="submit" size="icon" variant="ghost" className="h-9 w-9" aria-label="Valider" disabled={update.isPending}>
+                    <Button
+                      type="submit"
+                      size="icon"
+                      variant="ghost"
+                      className="h-9 w-9"
+                      aria-label="Valider"
+                      disabled={update.isPending}
+                    >
                       <Check className="h-4 w-4" />
                     </Button>
-                    <Button type="button" size="icon" variant="ghost" className="h-9 w-9" aria-label="Annuler" onClick={() => setEditing(null)}>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="h-9 w-9"
+                      aria-label="Annuler"
+                      onClick={() => setEditing(null)}
+                    >
                       <X className="h-4 w-4" />
                     </Button>
                   </form>
@@ -121,7 +152,8 @@ export function MealSection({
                       className="flex shrink-0 items-center gap-1 rounded-md border border-border px-2 py-1 text-sm hover:border-foreground/30"
                       aria-label={`Modifier la quantité de ${i.food_name}`}
                     >
-                      {nf.format(Number(i.quantity_g))} g <Pencil className="h-3 w-3 text-muted-foreground" />
+                      {nf.format(Number(i.quantity_g))} g{" "}
+                      <Pencil className="h-3 w-3 text-muted-foreground" />
                     </button>
                     <Button
                       size="icon"
@@ -142,7 +174,8 @@ export function MealSection({
       )}
       {items.length > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">
-          Protéines {nf.format(totals.protein)} g · Glucides {nf.format(totals.carbs)} g · Lipides {nf.format(totals.fat)} g
+          Protéines {nf.format(totals.protein)} g · Glucides {nf.format(totals.carbs)} g · Lipides{" "}
+          {nf.format(totals.fat)} g
         </p>
       )}
       <div className="mt-4 flex flex-wrap gap-2">
@@ -166,9 +199,12 @@ export function MealSection({
       <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
         <DialogContent className="border-border bg-surface sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl uppercase">Enregistrer le repas</DialogTitle>
+            <DialogTitle className="font-display text-2xl uppercase">
+              Enregistrer le repas
+            </DialogTitle>
             <DialogDescription>
-              {items.length} aliment{items.length > 1 ? "s" : ""}, {nf.format(totals.calories)} kcal. Tu pourras l'ajouter en un clic.
+              {items.length} aliment{items.length > 1 ? "s" : ""}, {nf.format(totals.calories)}{" "}
+              kcal. Tu pourras l'ajouter en un clic.
             </DialogDescription>
           </DialogHeader>
           <form
@@ -176,15 +212,21 @@ export function MealSection({
             onSubmit={(e) => {
               e.preventDefault();
               if (!recipeName.trim()) {
-          toast.error("Donne un nom au repas.");
-          return;
-        }
+                toast.error("Donne un nom au repas.");
+                return;
+              }
               saveRecipe.mutate();
             }}
           >
             <div className="space-y-2">
               <Label htmlFor="recipe-name">Nom du repas</Label>
-              <Input id="recipe-name" value={recipeName} onChange={(e) => setRecipeName(e.target.value)} maxLength={80} className="h-11" />
+              <Input
+                id="recipe-name"
+                value={recipeName}
+                onChange={(e) => setRecipeName(e.target.value)}
+                maxLength={80}
+                className="h-11"
+              />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setSaveOpen(false)}>

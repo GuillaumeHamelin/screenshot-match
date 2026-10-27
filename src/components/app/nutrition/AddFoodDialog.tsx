@@ -5,13 +5,25 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/app/ui";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { macrosForQuantity, MEAL_TYPES, sumMacros, type MealType } from "@/lib/fitness";
 import { searchOpenFoodFacts, type OffFood } from "@/lib/nutrition.functions";
-import { addFoodToMeal, addRecipeToMeal, displayName, invalidateNutrition, type PickedFood } from "@/lib/nutrition";
+import {
+  addFoodToMeal,
+  addRecipeToMeal,
+  displayName,
+  invalidateNutrition,
+  type PickedFood,
+} from "@/lib/nutrition";
 import { foodsQuery, recipesQuery, type Food } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { FoodFormDialog, MacroLine } from "./FoodFormDialog";
@@ -116,9 +128,13 @@ export function AddFoodDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="flex max-h-[92vh] flex-col gap-0 overflow-hidden border-border bg-surface p-0 sm:max-w-xl">
           <DialogHeader className="border-b border-border p-5">
-            <DialogTitle className="font-display text-2xl uppercase">Ajouter {meal.short}</DialogTitle>
+            <DialogTitle className="font-display text-2xl uppercase">
+              Ajouter {meal.short}
+            </DialogTitle>
             <DialogDescription>
-              {picked ? "Indique la quantité consommée." : "Cherche un produit, choisis un de tes aliments ou un repas enregistré."}
+              {picked
+                ? "Indique la quantité consommée."
+                : "Cherche un produit, choisis un de tes aliments ou un repas enregistré."}
             </DialogDescription>
           </DialogHeader>
 
@@ -128,9 +144,9 @@ export function AddFoodDialog({
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!validGrams) {
-          toast.error("Quantité : entre 1 et 5000 g.");
-          return;
-        }
+                  toast.error("Quantité : entre 1 et 5000 g.");
+                  return;
+                }
                 add.mutate();
               }}
             >
@@ -153,17 +169,30 @@ export function AddFoodDialog({
                   autoFocus
                   inputMode="decimal"
                   value={grams}
-                  onChange={(e) => setGrams(e.target.value.replace(",", ".").replace(/[^\d.]/g, ""))}
+                  onChange={(e) =>
+                    setGrams(e.target.value.replace(",", ".").replace(/[^\d.]/g, ""))
+                  }
                   className="h-12 text-lg"
                 />
                 <div className="flex flex-wrap gap-2">
                   {picked.servingG && (
-                    <Button type="button" size="sm" variant="secondary" onClick={() => setGrams(String(picked.servingG))}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setGrams(String(picked.servingG))}
+                    >
                       1 portion ({picked.servingG} g)
                     </Button>
                   )}
                   {[30, 50, 100, 150, 200, 250].map((v) => (
-                    <Button key={v} type="button" size="sm" variant="outline" onClick={() => setGrams(String(v))}>
+                    <Button
+                      key={v}
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setGrams(String(v))}
+                    >
                       {v} g
                     </Button>
                   ))}
@@ -209,9 +238,9 @@ export function AddFoodDialog({
                     e.preventDefault();
                     const q = query.trim();
                     if (q.length < 2) {
-          toast.error("Tape au moins 2 caractères.");
-          return;
-        }
+                      toast.error("Tape au moins 2 caractères.");
+                      return;
+                    }
                     offSearch.mutate(q);
                   }}
                 >
@@ -231,7 +260,8 @@ export function AddFoodDialog({
                   </Button>
                 </form>
                 <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Barcode className="h-3.5 w-3.5" /> Données Open Food Facts. Tape les chiffres sous le code-barres pour un produit précis.
+                  <Barcode className="h-3.5 w-3.5" /> Données Open Food Facts. Tape les chiffres
+                  sous le code-barres pour un produit précis.
                 </p>
 
                 <div className="mt-4 space-y-2">
@@ -255,20 +285,34 @@ export function AddFoodDialog({
                       className="flex w-full items-center gap-3 rounded-lg border border-border bg-background/50 p-3 text-left transition-colors hover:border-foreground/30"
                     >
                       {f.imageUrl ? (
-                        <img src={f.imageUrl} alt="" loading="lazy" className="h-11 w-11 shrink-0 rounded-md bg-muted object-cover" />
+                        <img
+                          src={f.imageUrl}
+                          alt=""
+                          loading="lazy"
+                          className="h-11 w-11 shrink-0 rounded-md bg-muted object-cover"
+                        />
                       ) : (
                         <div className="h-11 w-11 shrink-0 rounded-md bg-muted" />
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium">{f.name}</p>
-                        <p className="truncate text-xs text-muted-foreground">{f.brand ?? "Marque inconnue"}</p>
-                        <MacroLine calories={f.per100.calories} protein={f.per100.protein} carbs={f.per100.carbs} fat={f.per100.fat} suffix=" / 100 g" />
+                        <p className="truncate text-xs text-muted-foreground">
+                          {f.brand ?? "Marque inconnue"}
+                        </p>
+                        <MacroLine
+                          calories={f.per100.calories}
+                          protein={f.per100.protein}
+                          carbs={f.per100.carbs}
+                          fat={f.per100.fat}
+                          suffix=" / 100 g"
+                        />
                       </div>
                     </button>
                   ))}
                   {offSearch.data && offSearch.data.hidden > 0 && (
                     <p className="pt-1 text-xs text-muted-foreground">
-                      {offSearch.data.hidden} produit{offSearch.data.hidden > 1 ? "s" : ""} masqué{offSearch.data.hidden > 1 ? "s" : ""} : valeurs nutritionnelles incomplètes.
+                      {offSearch.data.hidden} produit{offSearch.data.hidden > 1 ? "s" : ""} masqué
+                      {offSearch.data.hidden > 1 ? "s" : ""} : valeurs nutritionnelles incomplètes.
                     </p>
                   )}
                 </div>
@@ -276,7 +320,13 @@ export function AddFoodDialog({
 
               <TabsContent value="mine" className="mt-0 min-h-0 flex-1 overflow-y-auto p-5">
                 <div className="flex gap-2">
-                  <Input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filtrer mes aliments" className="h-11" aria-label="Filtrer mes aliments" />
+                  <Input
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    placeholder="Filtrer mes aliments"
+                    className="h-11"
+                    aria-label="Filtrer mes aliments"
+                  />
                   <Button variant="outline" className="h-11" onClick={() => setCreateOpen(true)}>
                     <Plus /> Créer
                   </Button>
@@ -327,10 +377,20 @@ export function AddFoodDialog({
                     const t = sumMacros(
                       r.saved_recipe_items.map((i) => {
                         const m = macrosForQuantity(
-                          { calories: Number(i.calories_per_100g), protein: Number(i.protein_per_100g), carbs: Number(i.carbs_per_100g), fat: Number(i.fat_per_100g) },
+                          {
+                            calories: Number(i.calories_per_100g),
+                            protein: Number(i.protein_per_100g),
+                            carbs: Number(i.carbs_per_100g),
+                            fat: Number(i.fat_per_100g),
+                          },
                           Number(i.quantity_g),
                         );
-                        return { calories: m.calories, protein_g: m.protein, carbs_g: m.carbs, fat_g: m.fat };
+                        return {
+                          calories: m.calories,
+                          protein_g: m.protein,
+                          carbs_g: m.carbs,
+                          fat_g: m.fat,
+                        };
                       }),
                     );
                     return (
@@ -345,13 +405,20 @@ export function AddFoodDialog({
                       >
                         <div className="min-w-0">
                           <p className="flex items-center gap-1.5 truncate font-medium">
-                            {r.is_favorite && <Star className="h-3.5 w-3.5 shrink-0 fill-foreground" />}
+                            {r.is_favorite && (
+                              <Star className="h-3.5 w-3.5 shrink-0 fill-foreground" />
+                            )}
                             {r.name}
                           </p>
                           <p className="truncate text-xs text-muted-foreground">
                             {r.saved_recipe_items.map((i) => i.food_name).join(", ")}
                           </p>
-                          <MacroLine calories={t.calories} protein={t.protein} carbs={t.carbs} fat={t.fat} />
+                          <MacroLine
+                            calories={t.calories}
+                            protein={t.protein}
+                            carbs={t.carbs}
+                            fat={t.fat}
+                          />
                         </div>
                         <Plus className="h-4 w-4 shrink-0 text-muted-foreground" />
                       </button>

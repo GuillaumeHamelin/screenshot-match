@@ -12,7 +12,15 @@ import type { NutritionDay } from "@/lib/queries";
 const nf = new Intl.NumberFormat("fr-FR");
 const time = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
-export function WaterPanel({ date, entries, goalMl }: { date: string; entries: NutritionDay["water"]; goalMl: number }) {
+export function WaterPanel({
+  date,
+  entries,
+  goalMl,
+}: {
+  date: string;
+  entries: NutritionDay["water"];
+  goalMl: number;
+}) {
   const qc = useQueryClient();
   const [custom, setCustom] = useState("");
   const total = entries.reduce((s, e) => s + e.amount_ml, 0);
@@ -37,16 +45,26 @@ export function WaterPanel({ date, entries, goalMl }: { date: string; entries: N
     <Panel title="Hydratation" icon={Droplets}>
       <p className="font-display text-5xl font-bold leading-none">
         {nf.format(total)}
-        <span className="ml-1 text-lg font-semibold text-muted-foreground">/ {nf.format(goalMl)} ml</span>
+        <span className="ml-1 text-lg font-semibold text-muted-foreground">
+          / {nf.format(goalMl)} ml
+        </span>
       </p>
       <Meter value={percentOf(total, goalMl)} className="mt-4 h-2" />
       <p className="mt-2 text-xs text-muted-foreground">
-        {remaining > 0 ? `Encore ${nf.format(remaining)} ml pour atteindre ton objectif.` : "Objectif atteint."}
+        {remaining > 0
+          ? `Encore ${nf.format(remaining)} ml pour atteindre ton objectif.`
+          : "Objectif atteint."}
       </p>
 
       <div className="mt-5 grid grid-cols-2 gap-2">
         {[250, 500].map((ml) => (
-          <Button key={ml} variant="secondary" className="h-12 text-base" disabled={add.isPending} onClick={() => add.mutate(ml)}>
+          <Button
+            key={ml}
+            variant="secondary"
+            className="h-12 text-base"
+            disabled={add.isPending}
+            onClick={() => add.mutate(ml)}
+          >
             <GlassWater /> +{ml} ml
           </Button>
         ))}
@@ -57,9 +75,9 @@ export function WaterPanel({ date, entries, goalMl }: { date: string; entries: N
           e.preventDefault();
           const ml = Number(custom);
           if (!(ml >= 10 && ml <= 5000)) {
-          toast.error("Quantité : entre 10 et 5000 ml.");
-          return;
-        }
+            toast.error("Quantité : entre 10 et 5000 ml.");
+            return;
+          }
           add.mutate(Math.round(ml));
         }}
       >
@@ -71,7 +89,12 @@ export function WaterPanel({ date, entries, goalMl }: { date: string; entries: N
           className="h-11"
           aria-label="Quantité d'eau personnalisée en ml"
         />
-        <Button type="submit" variant="outline" className="h-11" disabled={add.isPending || !custom}>
+        <Button
+          type="submit"
+          variant="outline"
+          className="h-11"
+          disabled={add.isPending || !custom}
+        >
           <Plus /> Ajouter
         </Button>
       </form>

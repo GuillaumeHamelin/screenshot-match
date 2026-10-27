@@ -17,9 +17,10 @@ type Search = { jour?: string | undefined };
 
 export const Route = createFileRoute("/_authenticated/_shell/nutrition")({
   head: () => ({ meta: [{ title: "Nutrition — FitTracker" }] }),
-  validateSearch: (s: Record<string, unknown>): Search => ({
-    jour: typeof s.jour === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s.jour) ? s.jour : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): Search => {
+    const jour = s["jour"];
+    return { jour: typeof jour === "string" && /^\d{4}-\d{2}-\d{2}$/.test(jour) ? jour : undefined };
+  },
   loaderDeps: ({ search }) => ({ jour: search.jour }),
   loader: ({ context, deps }) =>
     Promise.all([
