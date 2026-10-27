@@ -56,7 +56,10 @@ export function WaterPanel({ date, entries, goalMl }: { date: string; entries: N
         onSubmit={(e) => {
           e.preventDefault();
           const ml = Number(custom);
-          if (!(ml >= 10 && ml <= 5000)) return toast.error("Quantité : entre 10 et 5000 ml.");
+          if (!(ml >= 10 && ml <= 5000)) {
+          toast.error("Quantité : entre 10 et 5000 ml.");
+          return;
+        }
           add.mutate(Math.round(ml));
         }}
       >

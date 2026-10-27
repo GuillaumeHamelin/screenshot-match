@@ -127,7 +127,10 @@ export function AddFoodDialog({
               className="space-y-5 overflow-y-auto p-5"
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!validGrams) return toast.error("Quantité : entre 1 et 5000 g.");
+                if (!validGrams) {
+          toast.error("Quantité : entre 1 et 5000 g.");
+          return;
+        }
                 add.mutate();
               }}
             >
@@ -205,7 +208,10 @@ export function AddFoodDialog({
                   onSubmit={(e) => {
                     e.preventDefault();
                     const q = query.trim();
-                    if (q.length < 2) return toast.error("Tape au moins 2 caractères.");
+                    if (q.length < 2) {
+          toast.error("Tape au moins 2 caractères.");
+          return;
+        }
                     offSearch.mutate(q);
                   }}
                 >

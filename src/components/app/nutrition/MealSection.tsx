@@ -90,7 +90,10 @@ export function MealSection({
                     onSubmit={(e) => {
                       e.preventDefault();
                       const g = Number(editing.grams);
-                      if (!(g > 0 && g <= 5000)) return toast.error("Quantité : entre 1 et 5000 g.");
+                      if (!(g > 0 && g <= 5000)) {
+          toast.error("Quantité : entre 1 et 5000 g.");
+          return;
+        }
                       update.mutate({ item: i, grams: g });
                     }}
                   >
@@ -172,7 +175,10 @@ export function MealSection({
             className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
-              if (!recipeName.trim()) return toast.error("Donne un nom au repas.");
+              if (!recipeName.trim()) {
+          toast.error("Donne un nom au repas.");
+          return;
+        }
               saveRecipe.mutate();
             }}
           >
