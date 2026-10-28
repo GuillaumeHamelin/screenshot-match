@@ -138,6 +138,7 @@ export function NutritionHistory({ userId, profile }: { userId: string; profile:
                   tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
+                  domain={[0, (max: number) => Math.ceil((Math.max(max, profile.calorie_goal) * 1.1) / 1000) * 1000]}
                 />
                 <Tooltip
                   contentStyle={tooltipStyle}
@@ -148,6 +149,7 @@ export function NutritionHistory({ userId, profile }: { userId: string; profile:
                   y={profile.calorie_goal}
                   stroke="var(--color-muted-foreground)"
                   strokeDasharray="4 4"
+                  ifOverflow="extendDomain"
                 />
                 <Bar
                   dataKey="calories"
@@ -178,6 +180,7 @@ export function NutritionHistory({ userId, profile }: { userId: string; profile:
                   tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
+                  domain={[0, (max: number) => Math.ceil((Math.max(max, profile.water_goal_ml) * 1.1) / 1000) * 1000]}
                 />
                 <Tooltip
                   contentStyle={tooltipStyle}
@@ -188,6 +191,7 @@ export function NutritionHistory({ userId, profile }: { userId: string; profile:
                   y={profile.water_goal_ml}
                   stroke="var(--color-muted-foreground)"
                   strokeDasharray="4 4"
+                  ifOverflow="extendDomain"
                 />
                 <Bar
                   dataKey="waterMl"

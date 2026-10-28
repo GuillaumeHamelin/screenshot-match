@@ -19,9 +19,9 @@
 - [x] Performances : stats, 1RM, graphiques, filtres, comparaison
 
 ## Phase 3 — Nutrition
-- [ ] Journal alimentaire + recherche Open Food Facts
-- [ ] Aliments et repas personnalisés / favoris
-- [ ] Hydratation, historique, moyennes hebdo
+- [x] Journal alimentaire + recherche Open Food Facts (nom ou code-barres)
+- [x] Aliments et repas personnalisés / favoris
+- [x] Hydratation, historique, moyennes hebdo
 
 ## Phase 4 — Suivi avancé
 - [ ] Photos de progression (avant/après)

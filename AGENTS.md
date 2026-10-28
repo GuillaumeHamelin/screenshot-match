@@ -21,3 +21,5 @@
 - Workout writes (start/finish/delete session, programs, reorder) live in `src/lib/workouts.ts`; call `invalidateTraining(qc)` after them. Why: one place keeps sessions, records, performances and dashboard in sync.
 - Personal records are computed only when a session is finished (`finishSession`, using `exerciseBests`/`detectRecords`); deleting a session deletes its records. Warm-ups and unvalidated sets never count. Why: records must match logged data.
 - Fixed overlays inside the app shell (e.g. rest timer) render through a portal to `document.body`. Why: the shell's page wrapper is animated with a transform, which traps `position: fixed`.
+- Nutrition writes (meal items, foods, saved meals, water) live in `src/lib/nutrition.ts`; call `invalidateNutrition(qc)` after them. Open Food Facts is only reached through the authenticated server function in `src/lib/nutrition.functions.ts`. Why: one cache-sync point, and the external API gets a proper User-Agent without browser CORS issues.
+- Meal items store computed totals for their quantity; products whose kcal/protein/carbs/fat are missing are hidden, never filled in. Why: nutrition values must never be invented.
