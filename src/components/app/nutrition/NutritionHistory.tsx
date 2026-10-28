@@ -138,6 +138,7 @@ export function NutritionHistory({ userId, profile }: { userId: string; profile:
                   tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
+                  domain={[0, (max: number) => Math.ceil(Math.max(max, profile.calorie_goal) * 1.1)]}
                 />
                 <Tooltip
                   contentStyle={tooltipStyle}
