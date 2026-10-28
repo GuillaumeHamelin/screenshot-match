@@ -148,6 +148,7 @@ export function NutritionHistory({ userId, profile }: { userId: string; profile:
                   y={profile.calorie_goal}
                   stroke="var(--color-muted-foreground)"
                   strokeDasharray="4 4"
+                  ifOverflow="extendDomain"
                 />
                 <Bar
                   dataKey="calories"
@@ -188,6 +189,7 @@ export function NutritionHistory({ userId, profile }: { userId: string; profile:
                   y={profile.water_goal_ml}
                   stroke="var(--color-muted-foreground)"
                   strokeDasharray="4 4"
+                  ifOverflow="extendDomain"
                 />
                 <Bar
                   dataKey="waterMl"

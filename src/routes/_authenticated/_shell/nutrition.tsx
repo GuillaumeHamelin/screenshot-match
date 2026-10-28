@@ -76,18 +76,24 @@ function NutritionPage() {
             <Button size="icon" variant="ghost" aria-label="Jour précédent" onClick={() => goTo(shiftISODate(date, -1))}>
               <ChevronLeft />
             </Button>
-            <input
-              type="date"
-              value={date}
-              max={today}
-              onChange={(e) => e.target.value && goTo(e.target.value > today ? today : e.target.value)}
-              className="sr-only"
-              id="nutrition-date"
-              aria-label="Choisir une date"
-            />
-            <label htmlFor="nutrition-date" className="min-w-36 cursor-pointer px-2 text-center font-display text-lg font-semibold uppercase">
+            <div className="relative min-w-36 px-2 text-center font-display text-lg font-semibold uppercase">
               {formatDay(date, today)}
-            </label>
+              <input
+                type="date"
+                value={date}
+                max={today}
+                onChange={(e) => e.target.value && goTo(e.target.value > today ? today : e.target.value)}
+                onClick={(e) => {
+                  try {
+                    e.currentTarget.showPicker();
+                  } catch {
+                    /* older browsers open the picker natively */
+                  }
+                }}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                aria-label="Choisir une date"
+              />
+            </div>
             <Button size="icon" variant="ghost" aria-label="Jour suivant" disabled={date >= today} onClick={() => goTo(shiftISODate(date, 1))}>
               <ChevronRight />
             </Button>
