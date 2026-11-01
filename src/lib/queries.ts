@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { parseISODate, shiftISODate } from "@/lib/fitness";
 
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Measurement = Database["public"]["Tables"]["body_measurements"]["Row"];
@@ -400,21 +401,20 @@ export const nutritionHistoryQuery = (userId: string, from: string, to: string) 
 export type Goal = Database["public"]["Tables"]["goals"]["Row"];
 export type Reminder = Database["public"]["Tables"]["reminders"]["Row"];
 
-export const goalsQuery = (userId: string) =>
-  queryOptions({
-    queryKey: ["goals", userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("goals")
-        .select("*, exercises(id, name)")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
+async function fetchGoals(userId: string) {
+  const { data, error } = await supabase
+    .from("goals")
+    .select("*, exercises(id, name)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
+}
 
-export type GoalRow = Awaited<ReturnType<NonNullable<ReturnType<typeof goalsQuery>["queryFn"]>>>[number];
+export const goalsQuery = (userId: string) =>
+  queryOptions({ queryKey: ["goals", userId], queryFn: () => fetchGoals(userId) });
+
+export type GoalRow = Awaited<ReturnType<typeof fetchGoals>>[number];
 
 export const remindersQuery = (userId: string) =>
   queryOptions({
@@ -433,9 +433,8 @@ export const remindersQuery = (userId: string) =>
 const CAL_SESSION_FIELDS = "id, name, status, scheduled_date, started_at, ended_at, duration_seconds, total_volume_kg, notes, template_id, program_id";
 
 async function fetchCalendar(userId: string, from: string, to: string) {
-  const [y, m, d] = to.split("-").map(Number);
-  const startIso = new Date(...(from.split("-").map(Number).map((n, i) => (i === 1 ? n - 1 : n)) as [number, number, number])).toISOString();
-  const endIso = new Date(y!, m! - 1, d! + 1).toISOString();
+  const startIso = parseISODate(from).toISOString();
+  const endIso = parseISODate(shiftISODate(to, 1)).toISOString();
   const [planned, done, goals] = await Promise.all([
     supabase
       .from("workout_sessions")
