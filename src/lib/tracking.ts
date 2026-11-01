@@ -2,7 +2,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { planFromTemplates } from "@/lib/fitness";
-import { invalidateTraining } from "@/lib/workouts";
 
 export function invalidateTracking(qc: QueryClient) {
   for (const key of ["goals", "calendar", "photos", "reminders", "dashboard", "profile"]) {
@@ -126,7 +125,6 @@ export async function planProgram(programId: string, fromISO: string, weeks: num
   return rows.length;
 }
 
-export { invalidateTraining };
 
 // ───────── Progress photos ─────────
 
