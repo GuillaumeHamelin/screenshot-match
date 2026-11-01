@@ -8,6 +8,13 @@
       "when": 1792672759275,
       "tag": "0000_fittracker_core_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793539840908,
+      "tag": "0001_phase4_goals_reminders",
+      "breakpoints": true
     }
   ]
 }

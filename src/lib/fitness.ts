@@ -411,3 +411,260 @@ export function shiftISODate(iso: string, days: number): string {
   date.setDate(date.getDate() + days);
   return toISODate(date);
 }
+
+// ───────────────────────── Suivi avancé : objectifs ─────────────────────────
+
+export type GoalCategory = "strength" | "training" | "body" | "nutrition";
+export type GoalMetric =
+  | "max_weight"
+  | "est_1rm"
+  | "reps_at_weight"
+  | "weekly_sessions"
+  | "weekly_volume"
+  | "weight_kg"
+  | "body_fat_pct"
+  | "muscle_mass_kg"
+  | "waist_cm"
+  | "chest_cm"
+  | "arm_cm"
+  | "thigh_cm"
+  | "calf_cm"
+  | "avg_protein"
+  | "avg_calories"
+  | "calorie_days"
+  | "avg_water"
+  | "manual";
+
+export const GOAL_CATEGORIES: { key: GoalCategory; label: string }[] = [
+  { key: "strength", label: "Musculation" },
+  { key: "training", label: "Entraînement" },
+  { key: "body", label: "Physique" },
+  { key: "nutrition", label: "Alimentation" },
+];
+
+export type GoalMetricInfo = {
+  key: GoalMetric;
+  category: GoalCategory | "any";
+  label: string;
+  unit: string;
+  hint: string;
+  needsExercise?: boolean;
+  needsWeight?: boolean;
+};
+
+export const GOAL_METRICS: GoalMetricInfo[] = [
+  { key: "max_weight", category: "strength", label: "Charge max sur un exercice", unit: "kg", hint: "Ta meilleure charge sur une série validée.", needsExercise: true },
+  { key: "est_1rm", category: "strength", label: "1RM estimé", unit: "kg", hint: "Calculé avec la formule d'Epley sur tes séries validées.", needsExercise: true },
+  { key: "reps_at_weight", category: "strength", label: "Répétitions avec une charge", unit: "reps", hint: "Ex. : 10 tractions avec 20 kg de lest.", needsExercise: true, needsWeight: true },
+  { key: "weekly_sessions", category: "training", label: "Séances par semaine", unit: "séances", hint: "Séances terminées depuis lundi." },
+  { key: "weekly_volume", category: "training", label: "Volume par semaine", unit: "kg", hint: "Charge × répétitions depuis lundi (échauffements exclus)." },
+  { key: "weight_kg", category: "body", label: "Poids", unit: "kg", hint: "Ta dernière pesée." },
+  { key: "body_fat_pct", category: "body", label: "Masse grasse", unit: "%", hint: "Ta dernière mesure." },
+  { key: "muscle_mass_kg", category: "body", label: "Masse musculaire", unit: "kg", hint: "Ta dernière mesure." },
+  { key: "waist_cm", category: "body", label: "Tour de taille", unit: "cm", hint: "Ta dernière mesure." },
+  { key: "chest_cm", category: "body", label: "Tour de poitrine", unit: "cm", hint: "Ta dernière mesure." },
+  { key: "arm_cm", category: "body", label: "Tour de bras", unit: "cm", hint: "Ta dernière mesure." },
+  { key: "thigh_cm", category: "body", label: "Tour de cuisse", unit: "cm", hint: "Ta dernière mesure." },
+  { key: "calf_cm", category: "body", label: "Tour de mollet", unit: "cm", hint: "Ta dernière mesure." },
+  { key: "avg_protein", category: "nutrition", label: "Protéines par jour", unit: "g", hint: "Moyenne des 7 derniers jours où tu as noté tes repas." },
+  { key: "avg_calories", category: "nutrition", label: "Calories par jour", unit: "kcal", hint: "Moyenne des 7 derniers jours où tu as noté tes repas." },
+  { key: "calorie_days", category: "nutrition", label: "Jours dans l'objectif calorique", unit: "jours", hint: "Jours à ±10 % de ton objectif calorique sur les 7 derniers jours." },
+  { key: "avg_water", category: "nutrition", label: "Hydratation par jour", unit: "ml", hint: "Moyenne des 7 derniers jours où tu as noté ton eau." },
+  { key: "manual", category: "any", label: "Suivi manuel", unit: "", hint: "Tu mets à jour la valeur actuelle toi-même." },
+];
+
+export function goalMetricInfo(key: string | null | undefined): GoalMetricInfo {
+  return GOAL_METRICS.find((m) => m.key === key) ?? GOAL_METRICS[GOAL_METRICS.length - 1]!;
+}
+
+/** True when the current value has reached the target, in the goal's direction (up or down). */
+export function isGoalReached(start: number | null | undefined, current: number | null | undefined, target: number): boolean {
+  if (current == null) return false;
+  const s = start ?? 0;
+  return target >= s ? current >= target : current <= target;
+}
+
+/** Most reps on one working set done with at least `minWeightKg`. */
+export function bestRepsAtWeight(sets: LoggedSet[], minWeightKg: number): number | null {
+  const ok = workingSets(sets).filter((s) => Number(s.weight_kg ?? 0) >= minWeightKg);
+  if (ok.length === 0) return null;
+  return Math.max(...ok.map((s) => s.reps ?? 0));
+}
+
+export type GoalSession = {
+  started_at: string | null;
+  total_volume_kg: number | string | null;
+  workout_exercises: { exercise_id: string; workout_sets: LoggedSet[] }[];
+};
+
+export type GoalData = {
+  sessions: GoalSession[];
+  measurements: ({ measured_on: string } & Partial<Record<string, unknown>>)[];
+  /** Nutrition of the last 7 days (any order). */
+  nutritionDays: DayNutrition[];
+  calorieGoal: number;
+  now?: Date;
+};
+
+/** Days within ±tolerance of the calorie goal, counting only days with logged food. */
+export function calorieDaysOnTarget(days: DayNutrition[], goal: number, tolerance = 0.1): number {
+  if (!(goal > 0)) return 0;
+  return days.filter((d) => d.items > 0 && Math.abs(d.calories - goal) <= goal * tolerance).length;
+}
+
+/** Current value of a goal, computed from logged data. Null when there is nothing to measure yet. */
+export function goalCurrentValue(
+  goal: { metric: string | null; exercise_id: string | null; reference_weight_kg: number | string | null; current_value: number | string | null },
+  data: GoalData,
+): number | null {
+  const metric = goalMetricInfo(goal.metric).key;
+  const now = data.now ?? new Date();
+  switch (metric) {
+    case "manual":
+      return goal.current_value != null ? Number(goal.current_value) : null;
+    case "max_weight":
+    case "est_1rm":
+    case "reps_at_weight": {
+      const sets = data.sessions.flatMap((s) =>
+        s.workout_exercises.filter((we) => we.exercise_id === goal.exercise_id).flatMap((we) => we.workout_sets),
+      );
+      if (metric === "reps_at_weight") return bestRepsAtWeight(sets, Number(goal.reference_weight_kg ?? 0));
+      const best = exerciseBests(sets).find((b) => b.type === metric);
+      return best ? best.value : null;
+    }
+    case "weekly_sessions":
+    case "weekly_volume": {
+      const start = startOfWeek(now).getTime();
+      const week = data.sessions.filter((s) => s.started_at && new Date(s.started_at).getTime() >= start);
+      if (metric === "weekly_sessions") return week.length;
+      return round1(week.reduce((t, s) => t + Number(s.total_volume_kg ?? 0), 0));
+    }
+    case "avg_protein":
+    case "avg_calories":
+    case "avg_water": {
+      const avg = nutritionAverages(data.nutritionDays);
+      if (metric === "avg_water") return avg.waterDays > 0 ? avg.waterMl : null;
+      if (avg.foodDays === 0) return null;
+      return metric === "avg_protein" ? avg.protein : avg.calories;
+    }
+    case "calorie_days":
+      return calorieDaysOnTarget(data.nutritionDays, data.calorieGoal);
+    default: {
+      const m = [...data.measurements]
+        .sort((a, b) => b.measured_on.localeCompare(a.measured_on))
+        .find((x) => x[metric] != null);
+      return m ? Number(m[metric]) : null;
+    }
+  }
+}
+
+// ───────────────────────── Suivi avancé : calendrier ─────────────────────────
+
+/** ISO weekday: Monday = 1 … Sunday = 7. */
+export function isoWeekday(d: Date): number {
+  return ((d.getDay() + 6) % 7) + 1;
+}
+
+export function parseISODate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y!, (m ?? 1) - 1, d ?? 1);
+}
+
+/** The 7 dates (Mon→Sun) of the week containing `iso`. */
+export function weekDates(iso: string): string[] {
+  const monday = startOfWeek(parseISODate(iso));
+  return Array.from({ length: 7 }, (_, i) => shiftISODate(toISODate(monday), i));
+}
+
+/** Full weeks (Mon→Sun) covering the month of `iso`: 4 to 6 rows of 7 dates. */
+export function monthGrid(iso: string): string[] {
+  const d = parseISODate(iso);
+  const first = new Date(d.getFullYear(), d.getMonth(), 1);
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  const start = toISODate(startOfWeek(first));
+  const end = weekDates(toISODate(last))[6]!;
+  const out: string[] = [];
+  for (let cur = start; cur <= end; cur = shiftISODate(cur, 1)) out.push(cur);
+  return out;
+}
+
+export function shiftMonth(iso: string, delta: number): string {
+  const d = parseISODate(iso);
+  return toISODate(new Date(d.getFullYear(), d.getMonth() + delta, 1));
+}
+
+export type CalendarState = "completed" | "in_progress" | "scheduled" | "missed" | "skipped";
+
+export function calendarState(s: { status: string; scheduled_date: string | null }, today: string): CalendarState {
+  if (s.status === "completed") return "completed";
+  if (s.status === "in_progress") return "in_progress";
+  if (s.status === "skipped") return "skipped";
+  return s.scheduled_date && s.scheduled_date < today ? "missed" : "scheduled";
+}
+
+/** Calendar day of a session: the day it was done, otherwise the planned day. */
+export function sessionDay(s: { status: string; started_at: string | null; scheduled_date: string | null }): string | null {
+  if ((s.status === "completed" || s.status === "in_progress") && s.started_at) return toISODate(new Date(s.started_at));
+  return s.scheduled_date;
+}
+
+/**
+ * Sessions to schedule from a program's weekdays, from `fromISO` for `weeks` weeks.
+ * Skips days where the same template is already planned or done.
+ */
+export function planFromTemplates(
+  templates: { id: string; name: string; weekdays: number[] }[],
+  fromISO: string,
+  weeks: number,
+  existing: { template_id: string | null; day: string | null }[],
+): { template_id: string; name: string; scheduled_date: string }[] {
+  const taken = new Set(existing.filter((e) => e.template_id && e.day).map((e) => `${e.template_id}|${e.day}`));
+  const out: { template_id: string; name: string; scheduled_date: string }[] = [];
+  for (let i = 0; i < weeks * 7; i++) {
+    const day = shiftISODate(fromISO, i);
+    const wd = isoWeekday(parseISODate(day));
+    for (const t of templates) {
+      if (!t.weekdays.includes(wd) || taken.has(`${t.id}|${day}`)) continue;
+      out.push({ template_id: t.id, name: t.name, scheduled_date: day });
+    }
+  }
+  return out;
+}
+
+// ───────────────────────── Suivi avancé : rappels ─────────────────────────
+
+export type ReminderLike = { id: string; enabled: boolean; weekdays: number[]; time_of_day: string };
+
+/** Minutes since midnight for "HH:MM" or "HH:MM:SS". */
+export function timeToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number);
+  return (h ?? 0) * 60 + (m ?? 0);
+}
+
+/**
+ * Reminders that should fire now: enabled, planned for today, time passed less than
+ * `graceMinutes` ago, and not already shown today (`fired` holds "id|YYYY-MM-DD").
+ */
+export function dueReminders<T extends ReminderLike>(reminders: T[], now: Date, fired: Set<string>, graceMinutes = 120): T[] {
+  const today = toISODate(now);
+  const wd = isoWeekday(now);
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  return reminders.filter((r) => {
+    if (!r.enabled || !r.weekdays.includes(wd)) return false;
+    const diff = nowMin - timeToMinutes(r.time_of_day);
+    return diff >= 0 && diff <= graceMinutes && !fired.has(`${r.id}|${today}`);
+  });
+}
+
+/** One DayNutrition per date from raw meal and water rows. */
+export function buildNutritionDays(
+  dates: string[],
+  meals: { eaten_on: string; meal_items: { calories: number; protein_g: number; carbs_g: number; fat_g: number }[] }[],
+  water: { drank_on: string; amount_ml: number }[],
+): DayNutrition[] {
+  return dates.map((date) => {
+    const items = meals.filter((m) => m.eaten_on === date).flatMap((m) => m.meal_items);
+    const waterMl = water.filter((w) => w.drank_on === date).reduce((s, w) => s + w.amount_ml, 0);
+    return { date, items: items.length, ...sumMacros(items), waterMl };
+  });
+}

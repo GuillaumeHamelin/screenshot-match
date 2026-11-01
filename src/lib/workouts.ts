@@ -65,7 +65,7 @@ export const PROGRAM_PRESETS: { key: string; label: string; description: string;
 ];
 
 export function invalidateTraining(qc: QueryClient) {
-  for (const key of ["dashboard", "sessions", "session", "active-session", "records", "performance", "previous-perf", "programs", "program"]) {
+  for (const key of ["dashboard", "sessions", "session", "active-session", "records", "performance", "previous-perf", "programs", "program", "calendar"]) {
     qc.invalidateQueries({ queryKey: [key] });
   }
 }
@@ -142,11 +142,15 @@ export async function duplicateProgram(programId: string) {
   return copy.id;
 }
 
-/** Starts a session (from a template or empty). Returns the existing one if a session is already running. */
+/**
+ * Starts a session (from a template or empty). Returns the existing one if a session is already running.
+ * With `scheduledId`, the planned session from the calendar becomes the live session.
+ */
 export async function startSession(input: {
   userId: string;
   templateId?: string | null;
   name?: string;
+  scheduledId?: string | null;
 }): Promise<{ id: string; resumed: boolean }> {
   const { data: running, error: re } = await supabase
     .from("workout_sessions")
@@ -173,17 +177,22 @@ export async function startSession(input: {
     template = data;
   }
 
-  const { data: session, error } = await supabase
-    .from("workout_sessions")
-    .insert({
-      name: template?.name ?? input.name ?? "Séance libre",
-      status: "in_progress",
-      started_at: new Date().toISOString(),
-      program_id: template?.program_id ?? null,
-      template_id: template?.id ?? null,
-    })
-    .select("id")
-    .single();
+  const row = {
+    name: template?.name ?? input.name ?? "Séance libre",
+    status: "in_progress",
+    started_at: new Date().toISOString(),
+    program_id: template?.program_id ?? null,
+    template_id: template?.id ?? null,
+  };
+  const { data: session, error } = input.scheduledId
+    ? await supabase
+        .from("workout_sessions")
+        .update({ ...row, name: input.name ?? row.name })
+        .eq("id", input.scheduledId)
+        .in("status", ["scheduled", "skipped"])
+        .select("id")
+        .single()
+    : await supabase.from("workout_sessions").insert(row).select("id").single();
   if (error) throw error;
 
   const tex = [...(template?.workout_template_exercises ?? [])].sort((a, b) => a.position - b.position);

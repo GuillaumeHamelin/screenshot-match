@@ -160,6 +160,7 @@ export type Database = {
           exercise_id: string | null
           id: string
           metric: string | null
+          reference_weight_kg: number | null
           start_value: number | null
           status: string
           target_date: string | null
@@ -176,6 +177,7 @@ export type Database = {
           exercise_id?: string | null
           id?: string
           metric?: string | null
+          reference_weight_kg?: number | null
           start_value?: number | null
           status?: string
           target_date?: string | null
@@ -192,6 +194,7 @@ export type Database = {
           exercise_id?: string | null
           id?: string
           metric?: string | null
+          reference_weight_kg?: number | null
           start_value?: number | null
           status?: string
           target_date?: string | null
@@ -452,6 +455,39 @@ export type Database = {
           storage_path?: string
           taken_on?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          kind: string
+          label: string
+          time_of_day: string
+          user_id: string
+          weekdays: number[]
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          kind?: string
+          label: string
+          time_of_day?: string
+          user_id?: string
+          weekdays?: number[]
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          kind?: string
+          label?: string
+          time_of_day?: string
+          user_id?: string
+          weekdays?: number[]
         }
         Relationships: []
       }
