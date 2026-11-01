@@ -655,3 +655,16 @@ export function dueReminders<T extends ReminderLike>(reminders: T[], now: Date, 
     return diff >= 0 && diff <= graceMinutes && !fired.has(`${r.id}|${today}`);
   });
 }
+
+/** One DayNutrition per date from raw meal and water rows. */
+export function buildNutritionDays(
+  dates: string[],
+  meals: { eaten_on: string; meal_items: { calories: number; protein_g: number; carbs_g: number; fat_g: number }[] }[],
+  water: { drank_on: string; amount_ml: number }[],
+): DayNutrition[] {
+  return dates.map((date) => {
+    const items = meals.filter((m) => m.eaten_on === date).flatMap((m) => m.meal_items);
+    const waterMl = water.filter((w) => w.drank_on === date).reduce((s, w) => s + w.amount_ml, 0);
+    return { date, items: items.length, ...sumMacros(items), waterMl };
+  });
+}
