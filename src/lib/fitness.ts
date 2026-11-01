@@ -544,7 +544,7 @@ export function goalCurrentValue(
     case "avg_water": {
       const avg = nutritionAverages(data.nutritionDays);
       if (metric === "avg_water") return avg.waterDays > 0 ? avg.waterMl : null;
-      if (avg.loggedDays === 0) return null;
+      if (avg.foodDays === 0) return null;
       return metric === "avg_protein" ? avg.protein : avg.calories;
     }
     case "calorie_days":
