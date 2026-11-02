@@ -15,6 +15,7 @@ import {
   goalMetricInfo,
   goalProgress,
   isGoalReached,
+  parseISODate,
   parseNum,
   toISODate,
   type GoalData,
@@ -36,7 +37,8 @@ const tooltipStyle = {
 /** Values over time for goals that have a history (body measurements, exercise bests). */
 function goalHistory(goal: GoalRow, data: GoalData): { label: string; value: number }[] {
   const info = goalMetricInfo(goal.metric);
-  const fmt = (d: string) => new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
+  const fmt = (d: string) =>
+    (d.length === 10 ? parseISODate(d) : new Date(d)).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
   if (info.category === "body") {
     return [...data.measurements]
       .filter((m) => m[info.key] != null)
@@ -72,7 +74,7 @@ export function GoalCard({ goal, data, exercises }: { goal: GoalRow; data: GoalD
   const [manual, setManual] = useState("");
   const today = toISODate();
   const daysLeft = goal.target_date
-    ? Math.round((new Date(goal.target_date).getTime() - new Date(today).getTime()) / 86400000)
+    ? Math.round((parseISODate(goal.target_date).getTime() - parseISODate(today).getTime()) / 86400000)
     : null;
   const category = GOAL_CATEGORIES.find((c) => c.key === goal.category)?.label ?? "Objectif";
   const active = goal.status === "active";
@@ -162,7 +164,7 @@ export function GoalCard({ goal, data, exercises }: { goal: GoalRow; data: GoalD
 
       {goal.target_date && (
         <p className="mt-3 text-xs text-muted-foreground">
-          Date visée : <span className="text-foreground">{new Date(goal.target_date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+          Date visée : <span className="text-foreground">{parseISODate(goal.target_date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
           {active && daysLeft != null && daysLeft >= 0 && ` · ${daysLeft === 0 ? "aujourd'hui" : `J-${daysLeft}`}`}
         </p>
       )}
