@@ -169,6 +169,7 @@ function ReminderDialog({ open, onOpenChange, reminder }: { open: boolean; onOpe
               <Select
                 value={kind}
                 onValueChange={(v) => {
+                  if (!v) return;
                   const k = v as ReminderKind;
                   const prev = REMINDER_KINDS.find((x) => x.key === kind)!;
                   const next = REMINDER_KINDS.find((x) => x.key === k)!;

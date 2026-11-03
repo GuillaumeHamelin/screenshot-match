@@ -66,7 +66,7 @@ export function ProgressPhotos({ userId }: { userId: string }) {
             <div className="mb-4 grid gap-3 md:grid-cols-[auto_1fr_1fr_auto] md:items-end">
               <div className="space-y-1.5">
                 <Label>Pose</Label>
-                <Select value={pose} onValueChange={setPose}>
+                <Select value={pose} onValueChange={(v) => v && setPose(v)}>
                   <SelectTrigger className="md:w-36" aria-label="Pose"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Toutes</SelectItem>
@@ -140,7 +140,7 @@ function PhotoPicker({ label, value, onChange, photos }: { label: string; value:
   return (
     <div className="space-y-1.5">
       <Label>{label}</Label>
-      <Select value={value ?? ""} onValueChange={onChange}>
+      <Select value={value ?? ""} onValueChange={(v) => v && onChange(v)}>
         <SelectTrigger aria-label={`Photo ${label.toLowerCase()}`}><SelectValue placeholder="Choisir" /></SelectTrigger>
         <SelectContent className="max-h-72">
           {photos.map((p) => <SelectItem key={p.id} value={p.id}>{fmt(p.taken_on)} · {poseLabel(p.pose)}</SelectItem>)}
@@ -257,7 +257,7 @@ function PhotoUploadDialog({ userId }: { userId: string }) {
             </div>
             <div className="space-y-1.5">
               <Label>Pose</Label>
-              <Select value={pose} onValueChange={setPose}>
+              <Select value={pose} onValueChange={(v) => v && setPose(v)}>
                 <SelectTrigger aria-label="Pose de la photo"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {PHOTO_POSES.map((p) => <SelectItem key={p.key} value={p.key}>{p.label}</SelectItem>)}

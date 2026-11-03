@@ -85,6 +85,7 @@ export function PlanSessionDialog({
             <Select
               value={templateId}
               onValueChange={(v) => {
+                if (!v) return;
                 setTemplateId(v);
                 const t = templates.find((x) => x.id === v);
                 if (t) setName(t.name);
@@ -178,7 +179,7 @@ export function PlanProgramDialog({
           >
             <div className="space-y-1.5">
               <Label>Programme</Label>
-              <Select value={programId} onValueChange={setProgramId}>
+              <Select value={programId} onValueChange={(v) => v && setProgramId(v)}>
                 <SelectTrigger aria-label="Programme"><SelectValue placeholder="Choisir" /></SelectTrigger>
                 <SelectContent>
                   {usable.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
@@ -192,7 +193,7 @@ export function PlanProgramDialog({
               </div>
               <div className="space-y-1.5">
                 <Label>Durée</Label>
-                <Select value={weeks} onValueChange={setWeeks}>
+                <Select value={weeks} onValueChange={(v) => v && setWeeks(v)}>
                   <SelectTrigger aria-label="Durée"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {[1, 2, 4, 6, 8].map((w) => <SelectItem key={w} value={String(w)}>{w} semaine{w > 1 ? "s" : ""}</SelectItem>)}

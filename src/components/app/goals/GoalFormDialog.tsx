@@ -172,7 +172,7 @@ export function GoalFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Type</Label>
-              <Select value={category} onValueChange={(v) => changeCategory(v as GoalCategory)}>
+              <Select value={category} onValueChange={(v) => v && changeCategory(v as GoalCategory)}>
                 <SelectTrigger aria-label="Type d'objectif"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {GOAL_CATEGORIES.map((c) => <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>)}
@@ -181,7 +181,7 @@ export function GoalFormDialog({
             </div>
             <div className="space-y-1.5">
               <Label>Mesure</Label>
-              <Select value={metric} onValueChange={(v) => setMetric(v as GoalMetric)}>
+              <Select value={metric} onValueChange={(v) => v && setMetric(v as GoalMetric)}>
                 <SelectTrigger aria-label="Mesure suivie"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {metrics.map((m) => <SelectItem key={m.key} value={m.key}>{m.label}</SelectItem>)}
@@ -194,7 +194,7 @@ export function GoalFormDialog({
             <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
               <div className="space-y-1.5">
                 <Label>Exercice</Label>
-                <Select value={exerciseId} onValueChange={setExerciseId}>
+                <Select value={exerciseId} onValueChange={(v) => v && setExerciseId(v)}>
                   <SelectTrigger aria-label="Exercice"><SelectValue placeholder="Choisir un exercice" /></SelectTrigger>
                   <SelectContent className="max-h-72">
                     {exercises.map((e) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
