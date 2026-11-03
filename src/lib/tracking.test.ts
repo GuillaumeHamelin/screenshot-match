@@ -176,6 +176,10 @@ describe("reminders", () => {
   it("not twice the same day", () => {
     expect(dueReminders([r("a", "18:00")], thu1830, new Set(["a|2026-10-29"]))).toEqual([]);
   });
+  it("a reminder created at 18:20 for 18:00 waits until the next planned day", () => {
+    expect(dueReminders([{ ...r("a", "18:00"), created_at: new Date(2026, 9, 29, 18, 20).toISOString() }], thu1830, new Set())).toEqual([]);
+    expect(dueReminders([{ ...r("a", "18:00"), created_at: new Date(2026, 9, 28, 9, 0).toISOString() }], thu1830, new Set()).length).toBe(1);
+  });
   it("not when more than 2 hours late", () => {
     expect(dueReminders([r("a", "16:00")], thu1830, new Set())).toEqual([]);
   });
