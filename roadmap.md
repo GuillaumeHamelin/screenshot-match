@@ -24,7 +24,9 @@
 - [x] Hydratation, historique, moyennes hebdo
 
 ## Phase 4 — Suivi avancé
-- [ ] Photos de progression (avant/après)
-- [ ] Calendrier mensuel / hebdo
-- [ ] Objectifs personnels
-- [ ] Export CSV, rappels, optimisations mobiles
+- [x] Photos de progression (avant/après, côte à côte ou curseur, privées)
+- [x] Calendrier mensuel / hebdo (planifier, déplacer, passer, démarrer, programme sur N semaines)
+- [x] Objectifs personnels (force, entraînement, physique, alimentation, suivi manuel)
+- [x] Rappels (dans l'appli + notifications du navigateur quand l'appli est ouverte)
+- [ ] Export CSV (non demandé pour l'instant ; export JSON déjà disponible)
+- [ ] Rappels quand l'appli est fermée (notifications push ou e-mail) — à décider
