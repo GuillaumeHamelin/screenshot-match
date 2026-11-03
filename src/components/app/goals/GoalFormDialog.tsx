@@ -77,6 +77,22 @@ export function GoalFormDialog({
   const [date, setDate] = useState(goal?.target_date ?? "");
   const [startTouched, setStartTouched] = useState(Boolean(goal));
 
+  // Fresh form each time a new goal is opened; edits reload the saved values.
+  useEffect(() => {
+    if (!open) return;
+    setCategory((goal?.category as GoalCategory) ?? "strength");
+    setMetric((goal?.metric as GoalMetric) ?? "max_weight");
+    setExerciseId(goal?.exercise_id ?? "");
+    setRefWeight(str(goal?.reference_weight_kg));
+    setTitle(goal?.title ?? "");
+    setStart(str(goal?.start_value));
+    setTarget(str(goal?.target_value));
+    setManualCurrent(str(goal?.current_value));
+    setUnit(goal?.unit ?? "");
+    setDate(goal?.target_date ?? "");
+    setStartTouched(Boolean(goal));
+  }, [open, goal]);
+
   const info = goalMetricInfo(metric);
   const metrics = GOAL_METRICS.filter((m) => m.category === category || m.category === "any");
   const exercise = exercises.find((e) => e.id === exerciseId);
