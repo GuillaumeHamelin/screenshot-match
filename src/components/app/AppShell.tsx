@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { activeSessionQuery, avatarUrlQuery, profileQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { APP_NAV } from "./nav";
+import { ReminderWatcher } from "./reminders/ReminderWatcher";
 
 const COLLAPSE_KEY = "ft-sidebar-collapsed";
 
@@ -58,6 +59,7 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-background bg-hex">
+      <ReminderWatcher userId={user.id} />
       {/* Desktop sidebar */}
       <aside
         className={cn(

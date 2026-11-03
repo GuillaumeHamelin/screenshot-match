@@ -36,6 +36,7 @@ import { EmptyState, Meter, PageHeader, Panel, StatCard } from "@/components/app
 import { Button } from "@/components/ui/button";
 import {
   formatDuration,
+  parseISODate,
   percentOf,
   startOfWeek,
   sumMacros,
@@ -311,13 +312,21 @@ function Dashboard() {
         </Panel>
 
         <div className="grid gap-4">
-          <Panel title="Prochaine séance" icon={CalendarClock}>
+          <Panel
+            title="Prochaine séance"
+            icon={CalendarClock}
+            action={
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/calendrier">Calendrier</Link>
+              </Button>
+            }
+          >
             {dash.nextSession ? (
               <div>
                 <p className="font-display text-2xl font-bold uppercase">{dash.nextSession.name}</p>
                 <p className="text-sm text-muted-foreground">
                   {dash.nextSession.scheduled_date &&
-                    new Date(dash.nextSession.scheduled_date).toLocaleDateString("fr-FR", {
+                    parseISODate(dash.nextSession.scheduled_date).toLocaleDateString("fr-FR", {
                       weekday: "long",
                       day: "numeric",
                       month: "long",
@@ -325,7 +334,10 @@ function Dashboard() {
                 </p>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Aucune séance programmée.</p>
+              <p className="text-sm text-muted-foreground">
+                Aucune séance programmée.{" "}
+                <Link to="/calendrier" className="text-foreground underline-offset-4 hover:underline">Planifier</Link>
+              </p>
             )}
           </Panel>
           <Panel title="Fréquence" icon={Timer}>
