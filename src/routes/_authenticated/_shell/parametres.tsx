@@ -10,6 +10,7 @@ import {
   validateNutritionGoals,
   type NutritionGoalValues,
 } from "@/components/app/NutritionGoalsForm";
+import { RemindersPanel } from "@/components/app/reminders/RemindersPanel";
 import { PageHeader, Panel } from "@/components/app/ui";
 import {
   AlertDialog,
@@ -34,7 +35,7 @@ import {
   type MainGoal,
   type Sex,
 } from "@/lib/fitness";
-import { measurementsQuery, profileQuery } from "@/lib/queries";
+import { measurementsQuery, profileQuery, remindersQuery } from "@/lib/queries";
 import { translateAuthError } from "@/lib/session";
 
 export const Route = createFileRoute("/_authenticated/_shell/parametres")({
@@ -43,6 +44,7 @@ export const Route = createFileRoute("/_authenticated/_shell/parametres")({
     Promise.all([
       context.queryClient.ensureQueryData(profileQuery(context.user.id)),
       context.queryClient.ensureQueryData(measurementsQuery(context.user.id)),
+      context.queryClient.ensureQueryData(remindersQuery(context.user.id)),
     ]),
   component: SettingsPage,
 });
@@ -65,6 +67,7 @@ const EXPORT_TABLES = [
   "saved_recipe_items",
   "water_intake",
   "progress_photos",
+  "reminders",
 ] as const;
 
 function SettingsPage() {
@@ -223,6 +226,8 @@ function SettingsPage() {
             <Button type="submit" disabled={savingGoals}>{savingGoals ? "Enregistrement…" : "Enregistrer les objectifs"}</Button>
           </form>
         </Panel>
+
+        <RemindersPanel userId={user.id} />
 
         <Panel title="Adresse e-mail" icon={Mail}>
           <form onSubmit={changeEmail} className="space-y-4">

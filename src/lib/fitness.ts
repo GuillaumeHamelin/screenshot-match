@@ -633,7 +633,7 @@ export function planFromTemplates(
 
 // ───────────────────────── Suivi avancé : rappels ─────────────────────────
 
-export type ReminderLike = { id: string; enabled: boolean; weekdays: number[]; time_of_day: string };
+export type ReminderLike = { id: string; enabled: boolean; weekdays: number[]; time_of_day: string; created_at?: string | null };
 
 /** Minutes since midnight for "HH:MM" or "HH:MM:SS". */
 export function timeToMinutes(t: string): number {
@@ -643,7 +643,8 @@ export function timeToMinutes(t: string): number {
 
 /**
  * Reminders that should fire now: enabled, planned for today, time passed less than
- * `graceMinutes` ago, and not already shown today (`fired` holds "id|YYYY-MM-DD").
+ * `graceMinutes` ago, not already shown today (`fired` holds "id|YYYY-MM-DD"), and not
+ * created after today's reminder time (a reminder set at 18:30 for 18:00 starts tomorrow).
  */
 export function dueReminders<T extends ReminderLike>(reminders: T[], now: Date, fired: Set<string>, graceMinutes = 120): T[] {
   const today = toISODate(now);
@@ -651,7 +652,13 @@ export function dueReminders<T extends ReminderLike>(reminders: T[], now: Date, 
   const nowMin = now.getHours() * 60 + now.getMinutes();
   return reminders.filter((r) => {
     if (!r.enabled || !r.weekdays.includes(wd)) return false;
-    const diff = nowMin - timeToMinutes(r.time_of_day);
+    const mins = timeToMinutes(r.time_of_day);
+    const diff = nowMin - mins;
+    if (r.created_at) {
+      const due = new Date(now);
+      due.setHours(Math.floor(mins / 60), mins % 60, 0, 0);
+      if (new Date(r.created_at) > due) return false;
+    }
     return diff >= 0 && diff <= graceMinutes && !fired.has(`${r.id}|${today}`);
   });
 }

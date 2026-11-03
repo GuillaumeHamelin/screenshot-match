@@ -169,12 +169,16 @@ function ReminderDialog({ open, onOpenChange, reminder }: { open: boolean; onOpe
               <Select
                 value={kind}
                 onValueChange={(v) => {
+                  if (!v) return;
                   const k = v as ReminderKind;
                   const prev = REMINDER_KINDS.find((x) => x.key === kind)!;
                   const next = REMINDER_KINDS.find((x) => x.key === k)!;
                   setKind(k);
                   if (!label.trim() || label === prev.defaultLabel) setLabel(next.defaultLabel);
-                  if (!reminder) setTime(next.defaultTime);
+                  if (!reminder) {
+                    setTime(next.defaultTime);
+                    setDays(k === "workout" ? [1, 3, 5] : [1, 2, 3, 4, 5, 6, 7]);
+                  }
                 }}
               >
                 <SelectTrigger aria-label="Type de rappel"><SelectValue /></SelectTrigger>

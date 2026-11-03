@@ -79,7 +79,7 @@ export async function updatePlannedSession(
   id: string,
   patch: { name?: string; scheduled_date?: string; notes?: string | null; template_id?: string | null; status?: "scheduled" | "skipped" },
 ) {
-  const row: Record<string, unknown> = { ...patch };
+  const row: typeof patch & { program_id?: string | null } = { ...patch };
   if (patch.template_id !== undefined) {
     if (patch.template_id) {
       const { data, error } = await supabase.from("workout_templates").select("program_id").eq("id", patch.template_id).single();

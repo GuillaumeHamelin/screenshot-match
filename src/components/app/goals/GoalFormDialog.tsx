@@ -30,7 +30,7 @@ export function suggestGoalTitle(metric: GoalMetric, target: number | null, exer
     case "est_1rm":
       return `${exerciseName ?? "Exercice"} : 1RM de ${t} kg`;
     case "reps_at_weight":
-      return `${t} reps à ${exerciseName ?? "l'exercice"}${refWeight ? ` avec ${nf.format(refWeight)} kg` : ""}`;
+      return `${exerciseName ?? "Exercice"} : ${t} reps${refWeight ? ` avec ${nf.format(refWeight)} kg` : ""}`;
     case "weekly_sessions":
       return `${t} séances par semaine`;
     case "weekly_volume":
@@ -76,6 +76,22 @@ export function GoalFormDialog({
   const [unit, setUnit] = useState(goal?.unit ?? "");
   const [date, setDate] = useState(goal?.target_date ?? "");
   const [startTouched, setStartTouched] = useState(Boolean(goal));
+
+  // Fresh form each time a new goal is opened; edits reload the saved values.
+  useEffect(() => {
+    if (!open) return;
+    setCategory((goal?.category as GoalCategory) ?? "strength");
+    setMetric((goal?.metric as GoalMetric) ?? "max_weight");
+    setExerciseId(goal?.exercise_id ?? "");
+    setRefWeight(str(goal?.reference_weight_kg));
+    setTitle(goal?.title ?? "");
+    setStart(str(goal?.start_value));
+    setTarget(str(goal?.target_value));
+    setManualCurrent(str(goal?.current_value));
+    setUnit(goal?.unit ?? "");
+    setDate(goal?.target_date ?? "");
+    setStartTouched(Boolean(goal));
+  }, [open, goal]);
 
   const info = goalMetricInfo(metric);
   const metrics = GOAL_METRICS.filter((m) => m.category === category || m.category === "any");
@@ -172,7 +188,7 @@ export function GoalFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Type</Label>
-              <Select value={category} onValueChange={(v) => changeCategory(v as GoalCategory)}>
+              <Select value={category} onValueChange={(v) => v && changeCategory(v as GoalCategory)}>
                 <SelectTrigger aria-label="Type d'objectif"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {GOAL_CATEGORIES.map((c) => <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>)}
@@ -181,7 +197,7 @@ export function GoalFormDialog({
             </div>
             <div className="space-y-1.5">
               <Label>Mesure</Label>
-              <Select value={metric} onValueChange={(v) => setMetric(v as GoalMetric)}>
+              <Select value={metric} onValueChange={(v) => v && setMetric(v as GoalMetric)}>
                 <SelectTrigger aria-label="Mesure suivie"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {metrics.map((m) => <SelectItem key={m.key} value={m.key}>{m.label}</SelectItem>)}
@@ -194,7 +210,7 @@ export function GoalFormDialog({
             <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
               <div className="space-y-1.5">
                 <Label>Exercice</Label>
-                <Select value={exerciseId} onValueChange={setExerciseId}>
+                <Select value={exerciseId} onValueChange={(v) => v && setExerciseId(v)}>
                   <SelectTrigger aria-label="Exercice"><SelectValue placeholder="Choisir un exercice" /></SelectTrigger>
                   <SelectContent className="max-h-72">
                     {exercises.map((e) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
