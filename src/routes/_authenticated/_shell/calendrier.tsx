@@ -134,7 +134,7 @@ function CalendrierPage() {
 
   const move = useMutation({
     mutationFn: ({ id, date }: { id: string; date: string }) => updatePlannedSession(id, { scheduled_date: date }),
-    onSuccess: (_, v) => { invalidateTraining(qc); toast.success(`Séance déplacée au ${shortFmt.format(parseISODate(v.date))}.`); },
+    onSuccess: (_, v) => { invalidateTraining(qc); toast.success(`Séance déplacée au ${shortFmt.format(parseISODate(v.date))}`); },
     onError: () => toast.error("Déplacement impossible."),
   });
 
@@ -213,7 +213,7 @@ function CalendrierPage() {
 
       <Legend />
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[1fr_340px]">
+      <div className={cn("mt-4 grid gap-4", view === "mois" && "xl:grid-cols-[1fr_340px]")}>
         {view === "mois" ? (
           <div className="panel overflow-hidden p-0">
             <div className="grid grid-cols-7 border-b border-border">
@@ -280,7 +280,7 @@ function CalendrierPage() {
                   {...dropProps(day)}
                   onClick={() => setSelected(day)}
                   className={cn(
-                    "panel flex min-h-[120px] cursor-pointer flex-col p-3 transition-colors md:min-h-[320px]",
+                    "panel flex min-h-[120px] min-w-0 cursor-pointer flex-col p-3 transition-colors md:min-h-[260px]",
                     selected === day && "border-foreground/50",
                     dragOver === day && "bg-accent ring-2 ring-foreground",
                   )}
@@ -424,7 +424,7 @@ function DayPanel({
   const rest = day < today && !sessions.some((s) => s.status === "completed" || s.status === "in_progress");
 
   return (
-    <Panel title={cap(dayFmt.format(parseISODate(day)))} className="h-fit xl:sticky xl:top-6">
+    <Panel title={cap(dayFmt.format(parseISODate(day)))} className="h-fit">
       {!inRange ? (
         <p className="text-sm text-muted-foreground">Choisis un jour dans le calendrier.</p>
       ) : (
