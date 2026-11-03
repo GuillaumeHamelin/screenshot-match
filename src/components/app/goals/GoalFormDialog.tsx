@@ -30,7 +30,7 @@ export function suggestGoalTitle(metric: GoalMetric, target: number | null, exer
     case "est_1rm":
       return `${exerciseName ?? "Exercice"} : 1RM de ${t} kg`;
     case "reps_at_weight":
-      return `${t} reps à ${exerciseName ?? "l'exercice"}${refWeight ? ` avec ${nf.format(refWeight)} kg` : ""}`;
+      return `${exerciseName ?? "Exercice"} : ${t} reps${refWeight ? ` avec ${nf.format(refWeight)} kg` : ""}`;
     case "weekly_sessions":
       return `${t} séances par semaine`;
     case "weekly_volume":
