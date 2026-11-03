@@ -178,7 +178,7 @@ function CalendrierPage() {
       <PageHeader
         eyebrow="Planning"
         title="Calendrier"
-        description="Tes séances prévues, terminées et manquées. Glisse une séance prévue sur un autre jour pour la déplacer."
+        description="Tes séances prévues, terminées et manquées. Pour déplacer une séance prévue, glisse-la sur un autre jour ou change sa date."
         actions={
           <>
             <Button variant="outline" onClick={() => setProgramOpen(true)}><ClipboardList /> Depuis un programme</Button>
