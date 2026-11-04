@@ -68,6 +68,68 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          parts: Json
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          parts?: Json
+          role: string
+          thread_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          parts?: Json
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "coach_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coach_threads: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       exercises: {
         Row: {
           created_at: string
@@ -373,6 +435,7 @@ export type Database = {
           main_goal: string | null
           notifications_enabled: boolean
           onboarding_completed: boolean
+          other_sports: string | null
           protein_goal: number
           sex: string | null
           terms_accepted_at: string | null
@@ -395,6 +458,7 @@ export type Database = {
           main_goal?: string | null
           notifications_enabled?: boolean
           onboarding_completed?: boolean
+          other_sports?: string | null
           protein_goal?: number
           sex?: string | null
           terms_accepted_at?: string | null
@@ -417,6 +481,7 @@ export type Database = {
           main_goal?: string | null
           notifications_enabled?: boolean
           onboarding_completed?: boolean
+          other_sports?: string | null
           protein_goal?: number
           sex?: string | null
           terms_accepted_at?: string | null

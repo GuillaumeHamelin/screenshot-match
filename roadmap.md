@@ -30,3 +30,11 @@
 - [x] Rappels (dans l'appli + notifications du navigateur quand l'appli est ouverte)
 - [ ] Export CSV (non demandé pour l'instant ; export JSON déjà disponible)
 - [ ] Rappels quand l'appli est fermée (notifications push ou e-mail) — à décider
+
+## Phase 5 — Coach IA & vidéos
+- [ ] Coach IA : discussions multiples sauvegardées dans le compte, adapté au profil, aux objectifs et aux autres sports
+- [ ] Le coach propose des programmes enregistrables dans « Programmes »
+- [ ] Le coach propose des repas (vrais aliments Open Food Facts / perso) ajoutables au journal
+- [ ] Bouton « Que manger aujourd'hui ? » dans Nutrition (ouvre le coach)
+- [ ] Champ « autres sports » dans le profil
+- [ ] Vidéo animée générée par IA pour chacun des 41 exercices de la bibliothèque, visible au clic
