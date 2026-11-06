@@ -68,6 +68,8 @@ const EXPORT_TABLES = [
   "water_intake",
   "progress_photos",
   "reminders",
+  "coach_threads",
+  "coach_messages",
 ] as const;
 
 function SettingsPage() {

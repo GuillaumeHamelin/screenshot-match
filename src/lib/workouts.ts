@@ -331,3 +331,26 @@ export function moveItem<T>(list: T[], index: number, delta: -1 | 1): T[] {
   [copy[index], copy[j]] = [copy[j]!, copy[index]!];
   return copy;
 }
+
+/** Saves a program proposed by the AI coach (library exercises only). */
+export async function createProgramFromPlan(plan: import("@/lib/coach").ProgramPlanOutput) {
+  const { data: program, error } = await supabase
+    .from("workout_programs")
+    .insert({ name: plan.name, description: plan.description })
+    .select("id")
+    .single();
+  if (error) throw error;
+  for (const [i, d] of plan.days.entries()) {
+    const { data: t, error: te } = await supabase
+      .from("workout_templates")
+      .insert({ program_id: program.id, name: d.name, weekdays: d.weekdays, position: i })
+      .select("id")
+      .single();
+    if (te) throw te;
+    const { error: ee } = await supabase.from("workout_template_exercises").insert(
+      d.exercises.map((e, j) => ({ template_id: t.id, exercise_id: e.exerciseId, position: j, target_sets: e.sets, target_reps: e.reps, rest_seconds: e.restSeconds })),
+    );
+    if (ee) throw ee;
+  }
+  return program.id;
+}

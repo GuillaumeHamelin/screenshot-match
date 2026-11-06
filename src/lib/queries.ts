@@ -489,3 +489,32 @@ export const photosQuery = (userId: string) =>
   queryOptions({ queryKey: ["photos", userId], queryFn: () => fetchPhotos(userId), staleTime: 45 * 60_000 });
 
 export type ProgressPhoto = Awaited<ReturnType<typeof fetchPhotos>>[number];
+
+export const coachThreadsQuery = (userId: string) =>
+  queryOptions({
+    queryKey: ["coach-threads", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("coach_threads")
+        .select("id, title, updated_at")
+        .eq("user_id", userId)
+        .order("updated_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const coachMessagesQuery = (threadId: string) =>
+  queryOptions({
+    queryKey: ["coach-messages", threadId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("coach_messages")
+        .select("message_id, role, parts, created_at")
+        .eq("thread_id", threadId)
+        .order("created_at");
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 0,
+  });

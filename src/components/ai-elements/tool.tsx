@@ -45,23 +45,23 @@ export type ToolHeaderProps = {
 );
 
 const statusLabels: Record<ToolPart["state"], string> = {
-  "approval-requested": "Awaiting Approval",
-  "approval-responded": "Responded",
-  "input-available": "Running",
-  "input-streaming": "Pending",
-  "output-available": "Completed",
-  "output-denied": "Denied",
-  "output-error": "Error",
+  "approval-requested": "En attente",
+  "approval-responded": "Répondu",
+  "input-available": "En cours",
+  "input-streaming": "Préparation",
+  "output-available": "Terminé",
+  "output-denied": "Refusé",
+  "output-error": "Erreur",
 };
 
 const statusIcons: Record<ToolPart["state"], ReactNode> = {
-  "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
-  "approval-responded": <CheckCircleIcon className="size-4 text-blue-600" />,
+  "approval-requested": <ClockIcon className="size-4 text-muted-foreground" />,
+  "approval-responded": <CheckCircleIcon className="size-4 text-muted-foreground" />,
   "input-available": <ClockIcon className="size-4 animate-pulse" />,
   "input-streaming": <CircleIcon className="size-4" />,
-  "output-available": <CheckCircleIcon className="size-4 text-green-600" />,
-  "output-denied": <XCircleIcon className="size-4 text-orange-600" />,
-  "output-error": <XCircleIcon className="size-4 text-red-600" />,
+  "output-available": <CheckCircleIcon className="size-4 text-foreground" />,
+  "output-denied": <XCircleIcon className="size-4 text-muted-foreground" />,
+  "output-error": <XCircleIcon className="size-4 text-destructive" />,
 };
 
 export const getStatusBadge = (status: ToolPart["state"]) => (
@@ -155,7 +155,7 @@ export const ToolOutput = ({
   return (
     <div className={cn("space-y-2", className)} {...props}>
       <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-        {errorText ? "Error" : "Result"}
+        {errorText ? "Erreur" : "Result"}
       </h4>
       <div
         className={cn(

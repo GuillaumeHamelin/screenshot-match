@@ -1,5 +1,6 @@
 import {
   Apple,
+  Bot,
   CalendarDays,
   ClipboardList,
   Dumbbell,
@@ -16,6 +17,7 @@ export const APP_NAV = [
   { to: "/entrainements", label: "Mes entraînements", icon: Dumbbell },
   { to: "/programmes", label: "Programmes", icon: ClipboardList },
   { to: "/performances", label: "Performances", icon: TrendingUp },
+  { to: "/coach", label: "Coach IA", icon: Bot },
   { to: "/nutrition", label: "Nutrition", icon: Apple },
   { to: "/physique", label: "Suivi physique", icon: Ruler },
   { to: "/calendrier", label: "Calendrier", icon: CalendarDays },

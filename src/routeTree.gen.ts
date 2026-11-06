@@ -23,6 +23,7 @@ import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oubl
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedShellRouteRouteImport } from './routes/_authenticated/_shell/route'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as AuthenticatedShellCalendrierRouteImport } from './routes/_authenticated/_shell/calendrier'
 import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authenticated/_shell/dashboard'
 import { Route as AuthenticatedShellExercicesRouteImport } from './routes/_authenticated/_shell/exercices'
@@ -104,6 +105,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiCoachRoute = ApiCoachRouteImport.update({
+  id: '/api/coach',
+  path: '/api/coach',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedShellCalendrierRoute =
   AuthenticatedShellCalendrierRouteImport.update({
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/api/coach': typeof ApiCoachRoute
   '/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
   '/exercices': typeof AuthenticatedShellExercicesRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/api/coach': typeof ApiCoachRoute
   '/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
   '/exercices': typeof AuthenticatedShellExercicesRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/_shell': typeof AuthenticatedShellRouteRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/api/coach': typeof ApiCoachRoute
   '/_authenticated/_shell/calendrier': typeof AuthenticatedShellCalendrierRoute
   '/_authenticated/_shell/dashboard': typeof AuthenticatedShellDashboardRoute
   '/_authenticated/_shell/exercices': typeof AuthenticatedShellExercicesRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/reset-password'
     | '/onboarding'
+    | '/api/coach'
     | '/calendrier'
     | '/dashboard'
     | '/exercices'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/reset-password'
     | '/onboarding'
+    | '/api/coach'
     | '/calendrier'
     | '/dashboard'
     | '/exercices'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/_shell'
     | '/_authenticated/onboarding'
+    | '/api/coach'
     | '/_authenticated/_shell/calendrier'
     | '/_authenticated/_shell/dashboard'
     | '/_authenticated/_shell/exercices'
@@ -367,6 +379,7 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiCoachRoute: typeof ApiCoachRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -468,6 +481,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/coach': {
+      id: '/api/coach'
+      path: '/api/coach'
+      fullPath: '/api/coach'
+      preLoaderRoute: typeof ApiCoachRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_shell/calendrier': {
       id: '/_authenticated/_shell/calendrier'
@@ -631,6 +651,7 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiCoachRoute: ApiCoachRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
