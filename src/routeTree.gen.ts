@@ -25,6 +25,7 @@ import { Route as AuthenticatedShellRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as AuthenticatedShellCalendrierRouteImport } from './routes/_authenticated/_shell/calendrier'
+import { Route as AuthenticatedShellCoachRouteImport } from './routes/_authenticated/_shell/coach'
 import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authenticated/_shell/dashboard'
 import { Route as AuthenticatedShellExercicesRouteImport } from './routes/_authenticated/_shell/exercices'
 import { Route as AuthenticatedShellNutritionRouteImport } from './routes/_authenticated/_shell/nutrition'
@@ -33,6 +34,8 @@ import { Route as AuthenticatedShellParametresRouteImport } from './routes/_auth
 import { Route as AuthenticatedShellPerformancesRouteImport } from './routes/_authenticated/_shell/performances'
 import { Route as AuthenticatedShellPhysiqueRouteImport } from './routes/_authenticated/_shell/physique'
 import { Route as AuthenticatedShellProfilRouteImport } from './routes/_authenticated/_shell/profil'
+import { Route as AuthenticatedShellCoachIndexRouteImport } from './routes/_authenticated/_shell/coach.index'
+import { Route as AuthenticatedShellCoachThreadIdRouteImport } from './routes/_authenticated/_shell/coach.$threadId'
 import { Route as AuthenticatedShellEntrainementsIndexRouteImport } from './routes/_authenticated/_shell/entrainements.index'
 import { Route as AuthenticatedShellEntrainementsSessionIdRouteImport } from './routes/_authenticated/_shell/entrainements.$sessionId'
 import { Route as AuthenticatedShellProgrammesIndexRouteImport } from './routes/_authenticated/_shell/programmes.index'
@@ -117,6 +120,11 @@ const AuthenticatedShellCalendrierRoute =
     path: '/calendrier',
     getParentRoute: () => AuthenticatedShellRouteRoute,
   } as any)
+const AuthenticatedShellCoachRoute = AuthenticatedShellCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => AuthenticatedShellRouteRoute,
+} as any)
 const AuthenticatedShellDashboardRoute =
   AuthenticatedShellDashboardRouteImport.update({
     id: '/dashboard',
@@ -165,6 +173,18 @@ const AuthenticatedShellProfilRoute =
     path: '/profil',
     getParentRoute: () => AuthenticatedShellRouteRoute,
   } as any)
+const AuthenticatedShellCoachIndexRoute =
+  AuthenticatedShellCoachIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedShellCoachRoute,
+  } as any)
+const AuthenticatedShellCoachThreadIdRoute =
+  AuthenticatedShellCoachThreadIdRouteImport.update({
+    id: '/$threadId',
+    path: '/$threadId',
+    getParentRoute: () => AuthenticatedShellCoachRoute,
+  } as any)
 const AuthenticatedShellEntrainementsIndexRoute =
   AuthenticatedShellEntrainementsIndexRouteImport.update({
     id: '/entrainements/',
@@ -205,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/coach': typeof ApiCoachRoute
   '/calendrier': typeof AuthenticatedShellCalendrierRoute
+  '/coach': typeof AuthenticatedShellCoachRouteWithChildren
   '/dashboard': typeof AuthenticatedShellDashboardRoute
   '/exercices': typeof AuthenticatedShellExercicesRoute
   '/nutrition': typeof AuthenticatedShellNutritionRoute
@@ -213,8 +234,10 @@ export interface FileRoutesByFullPath {
   '/performances': typeof AuthenticatedShellPerformancesRoute
   '/physique': typeof AuthenticatedShellPhysiqueRoute
   '/profil': typeof AuthenticatedShellProfilRoute
+  '/coach/$threadId': typeof AuthenticatedShellCoachThreadIdRoute
   '/entrainements/$sessionId': typeof AuthenticatedShellEntrainementsSessionIdRoute
   '/programmes/$programId': typeof AuthenticatedShellProgrammesProgramIdRoute
+  '/coach/': typeof AuthenticatedShellCoachIndexRoute
   '/entrainements/': typeof AuthenticatedShellEntrainementsIndexRoute
   '/programmes/': typeof AuthenticatedShellProgrammesIndexRoute
 }
@@ -241,8 +264,10 @@ export interface FileRoutesByTo {
   '/performances': typeof AuthenticatedShellPerformancesRoute
   '/physique': typeof AuthenticatedShellPhysiqueRoute
   '/profil': typeof AuthenticatedShellProfilRoute
+  '/coach/$threadId': typeof AuthenticatedShellCoachThreadIdRoute
   '/entrainements/$sessionId': typeof AuthenticatedShellEntrainementsSessionIdRoute
   '/programmes/$programId': typeof AuthenticatedShellProgrammesProgramIdRoute
+  '/coach': typeof AuthenticatedShellCoachIndexRoute
   '/entrainements': typeof AuthenticatedShellEntrainementsIndexRoute
   '/programmes': typeof AuthenticatedShellProgrammesIndexRoute
 }
@@ -264,6 +289,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/coach': typeof ApiCoachRoute
   '/_authenticated/_shell/calendrier': typeof AuthenticatedShellCalendrierRoute
+  '/_authenticated/_shell/coach': typeof AuthenticatedShellCoachRouteWithChildren
   '/_authenticated/_shell/dashboard': typeof AuthenticatedShellDashboardRoute
   '/_authenticated/_shell/exercices': typeof AuthenticatedShellExercicesRoute
   '/_authenticated/_shell/nutrition': typeof AuthenticatedShellNutritionRoute
@@ -272,8 +298,10 @@ export interface FileRoutesById {
   '/_authenticated/_shell/performances': typeof AuthenticatedShellPerformancesRoute
   '/_authenticated/_shell/physique': typeof AuthenticatedShellPhysiqueRoute
   '/_authenticated/_shell/profil': typeof AuthenticatedShellProfilRoute
+  '/_authenticated/_shell/coach/$threadId': typeof AuthenticatedShellCoachThreadIdRoute
   '/_authenticated/_shell/entrainements/$sessionId': typeof AuthenticatedShellEntrainementsSessionIdRoute
   '/_authenticated/_shell/programmes/$programId': typeof AuthenticatedShellProgrammesProgramIdRoute
+  '/_authenticated/_shell/coach/': typeof AuthenticatedShellCoachIndexRoute
   '/_authenticated/_shell/entrainements/': typeof AuthenticatedShellEntrainementsIndexRoute
   '/_authenticated/_shell/programmes/': typeof AuthenticatedShellProgrammesIndexRoute
 }
@@ -294,6 +322,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/api/coach'
     | '/calendrier'
+    | '/coach'
     | '/dashboard'
     | '/exercices'
     | '/nutrition'
@@ -302,8 +331,10 @@ export interface FileRouteTypes {
     | '/performances'
     | '/physique'
     | '/profil'
+    | '/coach/$threadId'
     | '/entrainements/$sessionId'
     | '/programmes/$programId'
+    | '/coach/'
     | '/entrainements/'
     | '/programmes/'
   fileRoutesByTo: FileRoutesByTo
@@ -330,8 +361,10 @@ export interface FileRouteTypes {
     | '/performances'
     | '/physique'
     | '/profil'
+    | '/coach/$threadId'
     | '/entrainements/$sessionId'
     | '/programmes/$programId'
+    | '/coach'
     | '/entrainements'
     | '/programmes'
   id:
@@ -352,6 +385,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/api/coach'
     | '/_authenticated/_shell/calendrier'
+    | '/_authenticated/_shell/coach'
     | '/_authenticated/_shell/dashboard'
     | '/_authenticated/_shell/exercices'
     | '/_authenticated/_shell/nutrition'
@@ -360,8 +394,10 @@ export interface FileRouteTypes {
     | '/_authenticated/_shell/performances'
     | '/_authenticated/_shell/physique'
     | '/_authenticated/_shell/profil'
+    | '/_authenticated/_shell/coach/$threadId'
     | '/_authenticated/_shell/entrainements/$sessionId'
     | '/_authenticated/_shell/programmes/$programId'
+    | '/_authenticated/_shell/coach/'
     | '/_authenticated/_shell/entrainements/'
     | '/_authenticated/_shell/programmes/'
   fileRoutesById: FileRoutesById
@@ -496,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellCalendrierRouteImport
       parentRoute: typeof AuthenticatedShellRouteRoute
     }
+    '/_authenticated/_shell/coach': {
+      id: '/_authenticated/_shell/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof AuthenticatedShellCoachRouteImport
+      parentRoute: typeof AuthenticatedShellRouteRoute
+    }
     '/_authenticated/_shell/dashboard': {
       id: '/_authenticated/_shell/dashboard'
       path: '/dashboard'
@@ -552,6 +595,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellProfilRouteImport
       parentRoute: typeof AuthenticatedShellRouteRoute
     }
+    '/_authenticated/_shell/coach/': {
+      id: '/_authenticated/_shell/coach/'
+      path: '/'
+      fullPath: '/coach/'
+      preLoaderRoute: typeof AuthenticatedShellCoachIndexRouteImport
+      parentRoute: typeof AuthenticatedShellCoachRoute
+    }
+    '/_authenticated/_shell/coach/$threadId': {
+      id: '/_authenticated/_shell/coach/$threadId'
+      path: '/$threadId'
+      fullPath: '/coach/$threadId'
+      preLoaderRoute: typeof AuthenticatedShellCoachThreadIdRouteImport
+      parentRoute: typeof AuthenticatedShellCoachRoute
+    }
     '/_authenticated/_shell/entrainements/': {
       id: '/_authenticated/_shell/entrainements/'
       path: '/entrainements'
@@ -583,8 +640,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedShellCoachRouteChildren {
+  AuthenticatedShellCoachThreadIdRoute: typeof AuthenticatedShellCoachThreadIdRoute
+  AuthenticatedShellCoachIndexRoute: typeof AuthenticatedShellCoachIndexRoute
+}
+
+const AuthenticatedShellCoachRouteChildren: AuthenticatedShellCoachRouteChildren =
+  {
+    AuthenticatedShellCoachThreadIdRoute: AuthenticatedShellCoachThreadIdRoute,
+    AuthenticatedShellCoachIndexRoute: AuthenticatedShellCoachIndexRoute,
+  }
+
+const AuthenticatedShellCoachRouteWithChildren =
+  AuthenticatedShellCoachRoute._addFileChildren(
+    AuthenticatedShellCoachRouteChildren,
+  )
+
 interface AuthenticatedShellRouteRouteChildren {
   AuthenticatedShellCalendrierRoute: typeof AuthenticatedShellCalendrierRoute
+  AuthenticatedShellCoachRoute: typeof AuthenticatedShellCoachRouteWithChildren
   AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
   AuthenticatedShellExercicesRoute: typeof AuthenticatedShellExercicesRoute
   AuthenticatedShellNutritionRoute: typeof AuthenticatedShellNutritionRoute
@@ -602,6 +676,7 @@ interface AuthenticatedShellRouteRouteChildren {
 const AuthenticatedShellRouteRouteChildren: AuthenticatedShellRouteRouteChildren =
   {
     AuthenticatedShellCalendrierRoute: AuthenticatedShellCalendrierRoute,
+    AuthenticatedShellCoachRoute: AuthenticatedShellCoachRouteWithChildren,
     AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
     AuthenticatedShellExercicesRoute: AuthenticatedShellExercicesRoute,
     AuthenticatedShellNutritionRoute: AuthenticatedShellNutritionRoute,
